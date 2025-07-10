@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Common resources shared between environments
+resources:
+  # Core deployments
+  - deployment/auth-backend-deployment.yaml
+  - deployment/celery-worker-deployment.yaml
+  - deployment/celery-beat-deployment.yaml
+  - deployment/redis-deployment.yaml
+  
+  # Services
+  - services/auth-backend-service.yaml
+  - services/redis-service.yaml
+  
+  # Network
+  - ingress/ingress.yaml
+  
+  # Configurations
+  - configmap/nginx-config.yaml
+  - configmap/supervisord-config.yaml
+  - secrets/parklense-auth-secrets.yaml
+  
+  # Autoscaling
+  - autoscaling/auth-backend-autoscaler.yaml
+  - autoscaling/celery-worker-autoscaler.yaml
+  - autoscaling/redis-autoscaler.yaml
+
+# Common labels
+commonLabels:
+  app.kubernetes.io/name: parklense-auth
+  app.kubernetes.io/part-of: parklense-platform 

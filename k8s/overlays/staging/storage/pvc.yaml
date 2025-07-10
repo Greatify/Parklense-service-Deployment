@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: parklense-auth-pvc
+  labels:
+    environment: staging
+    app: parklense-auth-backend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: gp3
+  volumeName: parklense-auth-staging-pv
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: parklense-auth-redis-pvc
+  labels:
+    environment: staging
+    app: parklense-auth-redis
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: gp3
+  volumeName: parklense-auth-redis-staging-pv
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: parklense-auth-beat-pvc
+  labels:
+    environment: staging
+    app: parklense-auth-celery-beat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: gp3
+  volumeName: parklense-auth-beat-staging-pv 

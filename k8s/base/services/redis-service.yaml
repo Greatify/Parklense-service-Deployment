@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    app: parklense-auth-redis
+    component: redis
+spec:
+  type: ClusterIP
+  selector:
+    app: parklense-auth-redis
+    component: redis
+  ports:
+    - name: redis
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+  sessionAffinity: None 

@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supervisord-config
+  labels:
+    app: parklense-auth
+    component: supervisord
+data:
+  supervisord.conf: |
+    [supervisord]
+    nodaemon=true
+    logfile=/app/logs/supervisord.log
+    pidfile=/tmp/supervisord.pid
+    user=parklense
+    loglevel=info
+
+    [unix_http_server]
+    file=/tmp/supervisor.sock
+    chmod=0700
+    username=parklense
+    password=parklense
+
+    [rpcinterface:supervisor]
+    supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+    [supervisorctl]
+    serverurl=unix:///tmp/supervisor.sock
+    username=parklense
+    password=parklense
+
+    [program:django]
+    command=gunicorn --bind 127.0.0.1:8000 --workers 4 --worker-class gevent --worker-connections 1000 --max-requests 1000 --max-requests-jitter 50 --timeout 30 --keep-alive 2 --preload config.wsgi:application
+    directory=/app
+    user=parklense
+    autostart=true
+    autorestart=true
+    stdout_logfile=/app/logs/django.log
+    stderr_logfile=/app/logs/django_error.log
+    stdout_logfile_maxbytes=50MB
+    stderr_logfile_maxbytes=50MB
+    stdout_logfile_backups=5
+    stderr_logfile_backups=5
+    environment=
+        DJANGO_SETTINGS_MODULE=config.settings.production,
+        PYTHONPATH=/app
+
+    [program:nginx]
+    command=nginx -g "daemon off;"
+    autostart=true
+    autorestart=true
+    stdout_logfile=/app/logs/nginx.log
+    stderr_logfile=/app/logs/nginx_error.log
+    stdout_logfile_maxbytes=50MB
+    stderr_logfile_maxbytes=50MB
+    stdout_logfile_backups=5
+    stderr_logfile_backups=5
+    user=root
+    priority=900
+
+    [program:celery_worker]
+    command=celery -A config.celery worker -l info -Q default,email,sms --concurrency=4 --prefetch-multiplier=1
+    directory=/app
+    user=parklense
+    autostart=true
+    autorestart=true
+    stdout_logfile=/app/logs/celery_worker.log
+    stderr_logfile=/app/logs/celery_worker_error.log
+    stdout_logfile_maxbytes=50MB
+    stderr_logfile_maxbytes=50MB
+    stdout_logfile_backups=5
+    stderr_logfile_backups=5
+    environment=
+        DJANGO_SETTINGS_MODULE=config.settings.production,
+        PYTHONPATH=/app
+    killasgroup=true
+    stopasgroup=true
+    priority=999
+
+    [program:celery_beat]
+    command=celery -A config.celery beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    directory=/app
+    user=parklense
+    autostart=true
+    autorestart=true
+    stdout_logfile=/app/logs/celery_beat.log
+    stderr_logfile=/app/logs/celery_beat_error.log
+    stdout_logfile_maxbytes=50MB
+    stderr_logfile_maxbytes=50MB
+    stdout_logfile_backups=5
+    stderr_logfile_backups=5
+    environment=
+        DJANGO_SETTINGS_MODULE=config.settings.production,
+        PYTHONPATH=/app
+    killasgroup=true
+    stopasgroup=true
+    priority=999
+
+    [group:parklense]
+    programs=django,celery_worker,celery_beat
+    priority=999 

@@ -1,0 +1,212 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dev-parklense-auth
+
+resources:
+  - ../../base
+  - storage/pv.yaml
+  - storage/pvc.yaml
+
+# Environment-specific labels
+labels:
+  - pairs:
+      environment: development
+      tier: dev
+    includeSelectors: false
+
+# Patches for dev environment
+patches:
+  # Backend Deployment patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-backend
+      spec:
+        replicas: 1
+        template:
+          spec:
+            serviceAccountName: dev-parklense-auth-sa
+            containers:
+            - name: parklense-auth-backend
+              resources:
+                requests:
+                  cpu: "0.5"
+                  memory: "1Gi"
+                limits:
+                  cpu: "1"
+                  memory: "2Gi"
+              env:
+              - name: WORKERS
+                value: "2"
+    target:
+      kind: Deployment
+      name: parklense-auth-backend
+
+  # Celery Worker patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-celery-worker
+      spec:
+        replicas: 1
+        template:
+          spec:
+            serviceAccountName: dev-parklense-auth-sa
+            containers:
+            - name: celery-worker
+              resources:
+                requests:
+                  cpu: "0.25"
+                  memory: "512Mi"
+                limits:
+                  cpu: "0.5"
+                  memory: "1Gi"
+              command:
+                - celery
+                - -A
+                - config.celery
+                - worker
+                - -l
+                - info
+                - -Q
+                - default,email,sms
+                - --concurrency=2
+                - --prefetch-multiplier=1
+                - --max-tasks-per-child=1000
+    target:
+      kind: Deployment
+      name: parklense-auth-celery-worker
+
+  # Celery Beat patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-celery-beat
+      spec:
+        replicas: 1
+        template:
+          spec:
+            serviceAccountName: dev-parklense-auth-sa
+            containers:
+            - name: celery-beat
+              resources:
+                requests:
+                  cpu: "0.1"
+                  memory: "256Mi"
+                limits:
+                  cpu: "0.25"
+                  memory: "512Mi"
+    target:
+      kind: Deployment
+      name: parklense-auth-celery-beat
+
+  # Redis patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-redis
+      spec:
+        replicas: 1
+        template:
+          spec:
+            serviceAccountName: dev-parklense-auth-sa
+            containers:
+            - name: redis
+              resources:
+                requests:
+                  cpu: "0.1"
+                  memory: "256Mi"
+                limits:
+                  cpu: "0.25"
+                  memory: "512Mi"
+    target:
+      kind: Deployment
+      name: parklense-auth-redis
+
+  # Ingress patches
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: parklense-auth-ingress
+        annotations:
+          alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/2d89b8f9-2ee4-4492-934c-ba181b3f5adb
+          alb.ingress.kubernetes.io/cors-allow-origin: >-
+            https://heycampus.in,https://auth.heycampus.in
+      spec:
+        rules:
+        - host: auth.heycampus.in
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-auth-backend-service
+                  port:
+                    number: 80
+        tls:
+          - hosts:
+              - auth.heycampus.in
+            secretName: parklense-auth-tls
+    target:
+      kind: Ingress
+      name: parklense-auth-ingress
+
+  # Secrets patches
+  - patch: |-
+      apiVersion: secrets-store.csi.x-k8s.io/v1
+      kind: SecretProviderClass
+      metadata:
+        name: parklense-auth-backend-secrets
+      spec:
+        parameters:
+          objects: |
+            - objectName: arn:aws:secretsmanager:REGION:ACCOUNT:secret:parklense-auth-dev-secrets-SUFFIX
+              objectAlias: ".env"
+              objectType: "secretsmanager"
+              objectVersionStage: "AWSCURRENT"
+    target:
+      kind: SecretProviderClass
+      name: parklense-auth-backend-secrets
+
+  # Service Account patches
+  - patch: |-
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: parklense-auth-sa
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT:role/parklense-auth-dev-role
+    target:
+      kind: ServiceAccount
+      name: parklense-auth-sa
+
+  # HPA patches - reduce scaling for dev
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-auth-backend-hpa
+      spec:
+        minReplicas: 1
+        maxReplicas: 3
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-auth-backend-hpa
+
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-auth-celery-worker-hpa
+      spec:
+        minReplicas: 1
+        maxReplicas: 2
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-auth-celery-worker-hpa 
