@@ -56,7 +56,7 @@ spec:
           emptyDir: {}
       containers:
         - name: parklense-auth-backend
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_environment_variable_-20250711-130324-ba6f57e
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Integrate__for_environment_var-20250711-131950-3de601b
           imagePullPolicy: Always
           resources:
             requests:
