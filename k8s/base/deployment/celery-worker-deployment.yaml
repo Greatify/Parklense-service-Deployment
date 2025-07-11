@@ -40,10 +40,10 @@ spec:
           emptyDir: {}
         - name: logs-volume
           emptyDir: {}
-# Removed hosts-volume
+          # Removed hosts-volume
       containers:
         - name: parklense-auth-celery-worker
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Integrate__for_environment_var-20250711-131950-3de601b
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_production_settings_to_-20250711-145620-0592f5f
           imagePullPolicy: Always
           resources:
             requests:
@@ -89,7 +89,7 @@ spec:
               mountPath: /app/media
             - name: logs-volume
               mountPath: /app/logs
-# Removed hosts-volume mount
+              # Removed hosts-volume mount
           lifecycle:
             postStart:
               exec:
