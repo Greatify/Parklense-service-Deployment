@@ -40,11 +40,6 @@ jobs:
           echo "COMMIT_MESSAGE=${{ github.event.inputs.commit_message }}" >> $GITHUB_ENV
           echo "DEPLOY_ACTOR=${{ github.actor }}" >> $GITHUB_ENV
 
-    #   - name: Install yq
-    #     run: |
-    #       sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-    #       sudo chmod +x /usr/local/bin/yq
-
       - name: Update deployment image tags
         run: |
           yq -i '.spec.template.spec.containers[0].image = env(BACKEND_IMAGE)' k8s/base/deployment/auth-backend-deployment.yaml

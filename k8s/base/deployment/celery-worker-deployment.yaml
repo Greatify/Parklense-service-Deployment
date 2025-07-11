@@ -6,7 +6,7 @@ metadata:
     app: parklense-auth-celery-worker
     component: celery-worker
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,7 +23,7 @@ spec:
         component: celery-worker
     spec:
       serviceAccountName: parklense-auth-secret-sa
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 30
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -36,24 +36,14 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: parklense-auth-backend-secrets
+        - name: parklense-auth-storage
+          emptyDir: {}
         - name: logs-volume
           emptyDir: {}
       containers:
-        - name: celery-worker
+        - name: parklense-auth-celery-worker
           image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_GitHub_Actions_workfl-20250711-073045-4febf04
           imagePullPolicy: Always
-          command:
-            - celery
-            - -A
-            - config.celery
-            - worker
-            - -l
-            - info
-            - -Q
-            - default,email,sms
-            - --concurrency=4
-            - --prefetch-multiplier=1
-            - --max-tasks-per-child=1000
           resources:
             requests:
               cpu: "1"
@@ -70,49 +60,35 @@ spec:
               value: "postgres-service"
             - name: POSTGRES_PORT
               value: "5432"
-            - name: CELERY_WORKER_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
+            - name: CELERY_WORKER_CONCURRENCY
+              value: "4"
+            - name: CELERY_WORKER_MAX_TASKS_PER_CHILD
+              value: "25"
+            - name: CELERY_WORKER_PREFETCH_MULTIPLIER
+              value: "1"
+          command:
+            - celery
+            - -A
+            - config.celery
+            - worker
+            - -l
+            - info
+            - -Q
+            - default,email,sms
+            - --concurrency=4
+            - --prefetch-multiplier=1
           volumeMounts:
             - name: parklense-auth-secrets-volume
               mountPath: /mnt/secret-store
               readOnly: true
+            - name: parklense-auth-storage
+              mountPath: /app/media
             - name: logs-volume
               mountPath: /app/logs
           lifecycle:
             postStart:
               exec:
                 command: ["sh", "-c", "cp -R /mnt/secret-store/.env /app/.env"]
-            preStop:
-              exec:
-                command: ["sh", "-c", "celery -A config.celery control shutdown"]
-          livenessProbe:
-            exec:
-              command:
-                - celery
-                - -A
-                - config.celery
-                - inspect
-                - ping
-            initialDelaySeconds: 60
-            timeoutSeconds: 30
-            periodSeconds: 60
-            successThreshold: 1
-            failureThreshold: 3
-          readinessProbe:
-            exec:
-              command:
-                - celery
-                - -A
-                - config.celery
-                - inspect
-                - ping
-            initialDelaySeconds: 30
-            timeoutSeconds: 30
-            periodSeconds: 30
-            successThreshold: 1
-            failureThreshold: 3
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false

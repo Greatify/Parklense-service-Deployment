@@ -31,7 +31,6 @@ patches:
         replicas: 1
         template:
           spec:
-            serviceAccountName: dev-parklense-auth-sa
             containers:
             - name: parklense-auth-backend
               resources:
@@ -58,7 +57,6 @@ patches:
         replicas: 1
         template:
           spec:
-            serviceAccountName: dev-parklense-auth-sa
             containers:
             - name: celery-worker
               resources:
@@ -94,7 +92,6 @@ patches:
         replicas: 1
         template:
           spec:
-            serviceAccountName: dev-parklense-auth-sa
             containers:
             - name: celery-beat
               resources:
@@ -118,7 +115,6 @@ patches:
         replicas: 1
         template:
           spec:
-            serviceAccountName: dev-parklense-auth-sa
             containers:
             - name: redis
               resources:

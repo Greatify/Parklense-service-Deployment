@@ -6,9 +6,12 @@ metadata:
     app: parklense-auth-celery-beat
     component: celery-beat
 spec:
-  replicas: 1 # Only one beat scheduler should run
+  replicas: 1
   strategy:
-    type: Recreate # Ensure only one instance runs at a time
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: parklense-auth-celery-beat
@@ -20,7 +23,7 @@ spec:
         component: celery-beat
     spec:
       serviceAccountName: parklense-auth-secret-sa
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 30
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -33,27 +36,16 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: parklense-auth-backend-secrets
+        - name: parklense-auth-storage
+          emptyDir: {}
         - name: logs-volume
           emptyDir: {}
-        # - name: beat-schedule
-        #   persistentVolumeClaim:
-        #     claimName: parklense-auth-beat-pvc
         - name: beat-schedule
           emptyDir: {}
       containers:
-        - name: celery-beat
+        - name: parklense-auth-celery-beat
           image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_GitHub_Actions_workfl-20250711-073045-4febf04
           imagePullPolicy: Always
-          command:
-            - celery
-            - -A
-            - config.celery
-            - beat
-            - -l
-            - info
-            - --scheduler
-            - django_celery_beat.schedulers:DatabaseScheduler
-            - --pidfile=/tmp/celerybeat.pid
           resources:
             requests:
               cpu: "0.5"
@@ -70,43 +62,29 @@ spec:
               value: "postgres-service"
             - name: POSTGRES_PORT
               value: "5432"
+          command:
+            - celery
+            - -A
+            - config.celery
+            - beat
+            - -l
+            - info
+            - --scheduler
+            - django_celery_beat.schedulers:DatabaseScheduler
           volumeMounts:
             - name: parklense-auth-secrets-volume
               mountPath: /mnt/secret-store
               readOnly: true
+            - name: parklense-auth-storage
+              mountPath: /app/media
             - name: logs-volume
               mountPath: /app/logs
             - name: beat-schedule
-              mountPath: /tmp
+              mountPath: /app/celerybeat-schedule
           lifecycle:
             postStart:
               exec:
                 command: ["sh", "-c", "cp -R /mnt/secret-store/.env /app/.env"]
-            preStop:
-              exec:
-                command: ["sh", "-c", "rm -f /tmp/celerybeat.pid"]
-          livenessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - "test -f /tmp/celerybeat.pid && kill -0 $(cat /tmp/celerybeat.pid)"
-            initialDelaySeconds: 60
-            timeoutSeconds: 30
-            periodSeconds: 60
-            successThreshold: 1
-            failureThreshold: 3
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - "test -f /tmp/celerybeat.pid"
-            initialDelaySeconds: 30
-            timeoutSeconds: 30
-            periodSeconds: 30
-            successThreshold: 1
-            failureThreshold: 3
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
