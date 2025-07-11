@@ -40,7 +40,7 @@ spec:
           emptyDir: {}
       containers:
         - name: celery-worker
-          image: ghcr.io/GITHUB_OWNER/parklense-auth-service:latest
+          image: ghcr.io/greatify/parklense-auth-service:latest
           imagePullPolicy: Always
           command:
             - celery
