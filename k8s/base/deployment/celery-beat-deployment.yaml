@@ -6,9 +6,9 @@ metadata:
     app: parklense-auth-celery-beat
     component: celery-beat
 spec:
-  replicas: 1  # Only one beat scheduler should run
+  replicas: 1 # Only one beat scheduler should run
   strategy:
-    type: Recreate  # Ensure only one instance runs at a time
+    type: Recreate # Ensure only one instance runs at a time
   selector:
     matchLabels:
       app: parklense-auth-celery-beat
@@ -42,7 +42,7 @@ spec:
           emptyDir: {}
       containers:
         - name: celery-beat
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:latest
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_GitHub_Actions_workfl-20250711-073045-4febf04
           imagePullPolicy: Always
           command:
             - celery
@@ -115,4 +115,4 @@ spec:
                 - ALL
             runAsNonRoot: true
             runAsUser: 1000
-            runAsGroup: 1000 
+            runAsGroup: 1000

@@ -40,7 +40,7 @@ spec:
           emptyDir: {}
       containers:
         - name: celery-worker
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:latest
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_GitHub_Actions_workfl-20250711-073045-4febf04
           imagePullPolicy: Always
           command:
             - celery
@@ -121,4 +121,4 @@ spec:
                 - ALL
             runAsNonRoot: true
             runAsUser: 1000
-            runAsGroup: 1000 
+            runAsGroup: 1000
