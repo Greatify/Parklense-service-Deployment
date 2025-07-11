@@ -22,7 +22,7 @@ spec:
         app: parklense-auth-celery-worker
         component: celery-worker
     spec:
-      serviceAccountName: parklense-auth-sa
+      serviceAccountName: parklense-auth-secret-sa
       terminationGracePeriodSeconds: 60
       securityContext:
         runAsNonRoot: true

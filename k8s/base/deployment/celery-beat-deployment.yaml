@@ -19,7 +19,7 @@ spec:
         app: parklense-auth-celery-beat
         component: celery-beat
     spec:
-      serviceAccountName: parklense-auth-sa
+      serviceAccountName: parklense-auth-secret-sa
       terminationGracePeriodSeconds: 60
       securityContext:
         runAsNonRoot: true
@@ -35,9 +35,11 @@ spec:
               secretProviderClass: parklense-auth-backend-secrets
         - name: logs-volume
           emptyDir: {}
+        # - name: beat-schedule
+        #   persistentVolumeClaim:
+        #     claimName: parklense-auth-beat-pvc
         - name: beat-schedule
-          persistentVolumeClaim:
-            claimName: parklense-auth-beat-pvc
+          emptyDir: {}
       containers:
         - name: celery-beat
           image: ghcr.io/parklense-auth-service:latest

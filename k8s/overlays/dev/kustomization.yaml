@@ -4,8 +4,8 @@ namespace: dev-parklense-auth
 
 resources:
   - ../../base
-  - storage/pv.yaml
-  - storage/pvc.yaml
+  # - storage/pv.yaml
+  # - storage/pvc.yaml
 
 # Environment-specific labels
 labels:
@@ -136,13 +136,16 @@ patches:
         annotations:
           alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/2d89b8f9-2ee4-4492-934c-ba181b3f5adb
           alb.ingress.kubernetes.io/cors-allow-origin: >-
-            https://heycampus.in,https://auth.heycampus.in
+            https://heycampus.in,https://*.heycampus.in
+          alb.ingress.kubernetes.io/load-balancer-name: parklense-auth-dev-alb
+          alb.ingress.kubernetes.io/load-balancer-attributes: >-
+            idle_timeout.timeout_seconds=60,deletion_protection.enabled=false
       spec:
         rules:
-        - host: auth.heycampus.in
+        - host: heycampus.in
           http:
             paths:
-            - path: /
+            - path: /api
               pathType: Prefix
               backend:
                 service:
@@ -151,7 +154,7 @@ patches:
                     number: 80
         tls:
           - hosts:
-              - auth.heycampus.in
+              - heycampus.in
             secretName: parklense-auth-tls
     target:
       kind: Ingress
@@ -166,25 +169,13 @@ patches:
       spec:
         parameters:
           objects: |
-            - objectName: arn:aws:secretsmanager:REGION:ACCOUNT:secret:parklense-auth-dev-secrets-SUFFIX
+            - objectName: arn:aws:secretsmanager:ap-south-1:399600302704:secret:parklense-auth-service-dev-OQq1ud
               objectAlias: ".env"
               objectType: "secretsmanager"
-              objectVersionStage: "AWSCURRENT"
     target:
       kind: SecretProviderClass
       name: parklense-auth-backend-secrets
 
-  # Service Account patches
-  - patch: |-
-      apiVersion: v1
-      kind: ServiceAccount
-      metadata:
-        name: parklense-auth-sa
-        annotations:
-          eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT:role/parklense-auth-dev-role
-    target:
-      kind: ServiceAccount
-      name: parklense-auth-sa
 
   # HPA patches - reduce scaling for dev
   - patch: |-

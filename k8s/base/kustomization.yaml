@@ -27,6 +27,8 @@ resources:
   - autoscaling/redis-autoscaler.yaml
 
 # Common labels
-commonLabels:
-  app.kubernetes.io/name: parklense-auth
-  app.kubernetes.io/part-of: parklense-platform 
+labels:
+  - pairs:
+      app.kubernetes.io/name: parklense-auth
+      app.kubernetes.io/part-of: parklense-platform
+    includeSelectors: true 

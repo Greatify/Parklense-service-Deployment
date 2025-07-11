@@ -22,7 +22,7 @@ spec:
         app: parklense-auth-backend
         component: backend
     spec:
-      serviceAccountName: parklense-auth-sa
+      serviceAccountName: parklense-auth-secret-sa
       terminationGracePeriodSeconds: 30
       securityContext:
         runAsNonRoot: true
@@ -53,9 +53,11 @@ spec:
             items:
               - key: nginx.conf
                 path: nginx.conf
+        # - name: parklense-auth-storage
+        #   persistentVolumeClaim:
+        #     claimName: parklense-auth-pvc
         - name: parklense-auth-storage
-          persistentVolumeClaim:
-            claimName: parklense-auth-pvc
+          emptyDir: {}
         - name: logs-volume
           emptyDir: {}
       containers:
