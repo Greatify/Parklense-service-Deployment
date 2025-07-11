@@ -35,7 +35,7 @@ jobs:
       - name: Checkout deployment repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.DEPLOYMENT_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
       - name: Set environment variables
