@@ -42,7 +42,7 @@ spec:
           emptyDir: {}
       containers:
         - name: parklense-auth-celery-worker
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_requirements_files_to_s-20250711-095658-350bffd
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Enhance_development_setup_by_c-20250711-101501-11019fa
           imagePullPolicy: Always
           resources:
             requests:
