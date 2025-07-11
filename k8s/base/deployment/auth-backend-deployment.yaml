@@ -98,7 +98,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["sh", "-c", "cp -R /mnt/secret-store/.env /app/.env"]
+                command: ['cp', '-R', '/mnt/secret-store/.env', '/app/.env']
           livenessProbe:
             httpGet:
               path: /api/health/
@@ -126,12 +126,12 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             failureThreshold: 30
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            capabilities:
-              drop:
-                - ALL
-            runAsNonRoot: true
-            runAsUser: 1000
-            runAsGroup: 1000
+          # securityContext:
+          #   allowPrivilegeEscalation: false
+          #   readOnlyRootFilesystem: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          #   runAsNonRoot: true
+          #   runAsUser: 1000
+          #   runAsGroup: 1000

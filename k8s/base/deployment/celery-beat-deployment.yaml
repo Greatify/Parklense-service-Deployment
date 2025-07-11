@@ -84,13 +84,13 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["sh", "-c", "cp -R /mnt/secret-store/.env /app/.env"]
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            capabilities:
-              drop:
-                - ALL
-            runAsNonRoot: true
-            runAsUser: 1000
-            runAsGroup: 1000
+                command: ['cp', '-R', '/mnt/secret-store/.env', '/app/.env']
+          # securityContext:
+          #   allowPrivilegeEscalation: false
+          #   readOnlyRootFilesystem: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          #   runAsNonRoot: true
+          #   runAsUser: 1000
+          #   runAsGroup: 1000

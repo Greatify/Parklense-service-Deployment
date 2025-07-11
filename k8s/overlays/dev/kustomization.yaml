@@ -9,7 +9,7 @@ resources:
 
 # Image tag overrides for dev environment
 images:
-  - name: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service
+  - name: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-backend
     newTag: latest
 
 # Environment-specific labels
@@ -31,6 +31,7 @@ patches:
         replicas: 1
         template:
           spec:
+            serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
               resources:
@@ -57,6 +58,7 @@ patches:
         replicas: 1
         template:
           spec:
+            serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
               resources:
@@ -92,6 +94,7 @@ patches:
         replicas: 1
         template:
           spec:
+            serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
               resources:

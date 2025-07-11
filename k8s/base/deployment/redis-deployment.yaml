@@ -81,15 +81,15 @@ spec:
             periodSeconds: 5
             successThreshold: 1
             failureThreshold: 3
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            capabilities:
-              drop:
-                - ALL
-            runAsNonRoot: true
-            runAsUser: 999
-            runAsGroup: 999
+          # securityContext:
+          #   allowPrivilegeEscalation: false
+          #   readOnlyRootFilesystem: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          #   runAsNonRoot: true
+          #   runAsUser: 999
+          #   runAsGroup: 999
 
 ---
 apiVersion: v1
