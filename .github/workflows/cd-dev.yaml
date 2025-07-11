@@ -8,7 +8,7 @@ on:
       image:
         description: 'Docker image to deploy'
         required: true
-        default: 'ghcr.io/parklense-auth-service:latest'
+        default: '399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:latest'
       sha:
         description: 'Git SHA of the commit'
         required: true

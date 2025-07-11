@@ -40,7 +40,7 @@ spec:
           emptyDir: {}
       containers:
         - name: celery-worker
-          image: ghcr.io/greatify/parklense-auth-service:latest
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:latest
           imagePullPolicy: Always
           command:
             - celery

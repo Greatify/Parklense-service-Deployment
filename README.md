@@ -133,13 +133,13 @@ Use the provided deployment script:
 
 ```bash
 # Deploy to development
-./scripts/deploy.sh dev ghcr.io/parklense/auth-backend:latest
+./scripts/deploy.sh dev 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:latest
 
 # Deploy to staging
-./scripts/deploy.sh staging ghcr.io/parklense/auth-backend:v1.2.3
+./scripts/deploy.sh staging 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:v1.2.3
 
 # Deploy to production (requires confirmation)
-./scripts/deploy.sh prod ghcr.io/parklense/auth-backend:v1.2.3
+./scripts/deploy.sh prod 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:v1.2.3
 ```
 
 ### Environment-Specific Deployments
@@ -252,7 +252,7 @@ kubectl get events -n <namespace> --sort-by='.lastTimestamp'
 #### 2. Image pull errors
 ```bash
 # Verify image exists
-docker pull ghcr.io/parklense/auth-backend:tag
+docker pull 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:tag
 
 # Check secret configuration
 kubectl get secret -n <namespace>

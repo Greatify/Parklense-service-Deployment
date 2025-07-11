@@ -52,8 +52,8 @@ show_usage() {
     echo ""
     echo "Examples:"
     echo "  $0 dev latest"
-    echo "  $0 staging ghcr.io/parklense/auth-backend:main-abc123"
-    echo "  $0 prod ghcr.io/parklense/auth-backend:v1.2.3"
+      echo "  $0 staging 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:main-abc123"
+  echo "  $0 prod 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:v1.2.3"
     echo ""
 }
 

@@ -7,6 +7,11 @@ resources:
   # - storage/pv.yaml
   # - storage/pvc.yaml
 
+# Image tag overrides for dev environment
+images:
+  - name: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service
+    newTag: latest
+
 # Environment-specific labels
 labels:
   - pairs:
