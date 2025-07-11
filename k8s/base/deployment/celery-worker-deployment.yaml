@@ -24,11 +24,11 @@ spec:
     spec:
       serviceAccountName: parklense-auth-secret-sa
       terminationGracePeriodSeconds: 30
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+      # securityContext:
+      #   runAsNonRoot: true
+      #   runAsUser: 1000
+      #   runAsGroup: 1000
+      #   fsGroup: 1000
       volumes:
         - name: parklense-auth-secrets-volume
           csi:
@@ -40,6 +40,7 @@ spec:
           emptyDir: {}
         - name: logs-volume
           emptyDir: {}
+# Removed hosts-volume
       containers:
         - name: parklense-auth-celery-worker
           image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Integrate__for_environment_var-20250711-131950-3de601b
@@ -55,13 +56,20 @@ spec:
             - name: DJANGO_SETTINGS_MODULE
               value: "config.settings.production"
             - name: REDIS_URL
-              value: "redis://redis-service:6379"
+              value: "redis://redis-service:6379/0"
+            - name: CELERY_BROKER_URL
+              value: "redis://redis-service:6379/0"
             - name: CELERY_WORKER_CONCURRENCY
               value: "4"
             - name: CELERY_WORKER_MAX_TASKS_PER_CHILD
               value: "25"
             - name: CELERY_WORKER_PREFETCH_MULTIPLIER
               value: "1"
+            - name: DJANGO_REDIS_PARSER_CLASS
+              value: "redis.connection.DefaultParser"
+          envFrom:
+            - configMapRef:
+                name: parklense-env-config
           command:
             - celery
             - -A
@@ -81,10 +89,11 @@ spec:
               mountPath: /app/media
             - name: logs-volume
               mountPath: /app/logs
+# Removed hosts-volume mount
           lifecycle:
             postStart:
               exec:
-                command: ['cp', '-R', '/mnt/secret-store/.env', '/app/.env']
+                command: ['sh', '-c', 'cp -R /mnt/secret-store/.env /app/.env']
           # securityContext:
           #   allowPrivilegeEscalation: false
           #   readOnlyRootFilesystem: false

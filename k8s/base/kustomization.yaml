@@ -18,6 +18,7 @@ resources:
   
   # Configurations
   - configmap/nginx-config.yaml
+  - configmap/env-config.yaml
   - secrets/parklense-auth-secrets.yaml
   
   # Autoscaling
