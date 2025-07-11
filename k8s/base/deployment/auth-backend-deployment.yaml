@@ -62,7 +62,7 @@ spec:
           emptyDir: {}
       containers:
         - name: parklense-auth-backend
-          image: ghcr.io/parklense-auth-service:latest
+          image: ghcr.io/GITHUB_OWNER/parklense-auth-service:latest
           imagePullPolicy: Always
           resources:
             requests:
