@@ -14,5 +14,5 @@ spec:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 80
   sessionAffinity: None 

@@ -13,7 +13,6 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT:certificate/CERT_ID
     alb.ingress.kubernetes.io/load-balancer-name: parklense-auth-alb
-    alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=false,stickiness.lb_cookie.duration_seconds=86400
 
     alb.ingress.kubernetes.io/cors-allow-origin: "https://parklense.com,https://www.parklense.com,https://*.parklense.com"
     alb.ingress.kubernetes.io/cors-allow-methods: "GET,POST,PUT,DELETE,OPTIONS"
@@ -41,24 +40,24 @@ metadata:
       }
 spec:
   rules:
-    - host: auth.parklense.com
+    - host: heycampus.in
       http:
         paths:
-          - path: /
+          - path: /api
             pathType: Prefix
             backend:
               service:
                 name: parklense-auth-backend-service
                 port:
                   number: 80
-    - host: auth-api.parklense.com
+    - host: heycampus.in
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: parklense-auth-backend-service
+                name: parklense-frontend-service
                 port:
                   number: 80
   tls:
