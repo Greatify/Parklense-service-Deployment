@@ -1,21 +1,17 @@
-name: CD - Deploy to Development
+name: Deploy to Development
 
 on:
-  repository_dispatch:
-    types: [deploy-dev]
   workflow_dispatch:
     inputs:
       image:
         description: 'Docker image to deploy'
         required: true
-        default: '399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:latest'
       sha:
         description: 'Git SHA of the commit'
         required: true
       commit_message:
         description: 'Original commit message'
         required: true
-        default: 'Manual deployment'
 
 jobs:
   deploy-dev:
@@ -27,10 +23,9 @@ jobs:
     steps:
       - name: Display Deployment Information
         run: |
-          echo "Image: ${{ github.event.client_payload.image || github.event.inputs.image }}"
-          echo "SHA: ${{ github.event.client_payload.sha || github.event.inputs.sha }}"
-          echo "Commit Message: ${{ github.event.client_payload.commit_message || github.event.inputs.commit_message }}"
-          echo "Actor: ${{ github.event.client_payload.actor || github.actor }}"
+          echo "Image: ${{ github.event.inputs.image }}"
+          echo "SHA: ${{ github.event.inputs.sha }}"
+          echo "Commit Message: ${{ github.event.inputs.commit_message }}"
 
       - name: Checkout deployment repository
         uses: actions/checkout@v4
@@ -40,10 +35,10 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "BACKEND_IMAGE=${{ github.event.client_payload.image || github.event.inputs.image }}" >> $GITHUB_ENV
-          echo "COMMIT_SHA=${{ github.event.client_payload.sha || github.event.inputs.sha }}" >> $GITHUB_ENV
-          echo "COMMIT_MESSAGE=${{ github.event.client_payload.commit_message || github.event.inputs.commit_message }}" >> $GITHUB_ENV
-          echo "DEPLOY_ACTOR=${{ github.event.client_payload.actor || github.actor }}" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE=${{ github.event.inputs.image }}" >> $GITHUB_ENV
+          echo "COMMIT_SHA=${{ github.event.inputs.sha }}" >> $GITHUB_ENV
+          echo "COMMIT_MESSAGE=${{ github.event.inputs.commit_message }}" >> $GITHUB_ENV
+          echo "DEPLOY_ACTOR=${{ github.actor }}" >> $GITHUB_ENV
 
     #   - name: Install yq
     #     run: |
