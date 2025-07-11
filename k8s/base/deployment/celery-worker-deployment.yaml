@@ -42,7 +42,7 @@ spec:
           emptyDir: {}
       containers:
         - name: parklense-auth-celery-worker
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_GitHub_Actions_workfl-20250711-073045-4febf04
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_requirements_files_to_s-20250711-095658-350bffd
           imagePullPolicy: Always
           resources:
             requests:
