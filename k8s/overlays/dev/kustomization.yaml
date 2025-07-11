@@ -58,7 +58,7 @@ patches:
         template:
           spec:
             containers:
-            - name: celery-worker
+            - name: parklense-auth-celery-worker
               resources:
                 requests:
                   cpu: "0.25"
@@ -93,7 +93,7 @@ patches:
         template:
           spec:
             containers:
-            - name: celery-beat
+            - name: parklense-auth-celery-beat
               resources:
                 requests:
                   cpu: "0.1"
