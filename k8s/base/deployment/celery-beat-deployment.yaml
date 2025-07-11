@@ -58,10 +58,6 @@ spec:
               value: "config.settings.production"
             - name: REDIS_URL
               value: "redis://redis-service:6379"
-            - name: POSTGRES_HOST
-              value: "postgres-service"
-            - name: POSTGRES_PORT
-              value: "5432"
           command:
             - celery
             - -A
