@@ -210,7 +210,7 @@ data:
 
         # Swagger UI static files (drf-yasg - keeping for backwards compatibility)
         location /api/static/drf-yasg/ {
-            alias /app/static/drf-yasg/;
+            alias /app/staticfiles/drf-yasg/;
             expires -1;
             add_header Cache-Control "no-store, no-cache, must-revalidate, post-check=0, pre-check=0";
             try_files $uri $uri/ =404;
