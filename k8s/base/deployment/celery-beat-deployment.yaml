@@ -45,7 +45,7 @@ spec:
           # Removed hosts-volume
       containers:
         - name: parklense-auth-celery-beat
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor__Clean_up_vehicle_ser-20250712-104344-a638a74
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:feat__Implement_service_authen-20250712-105829-b57215f
           imagePullPolicy: Always
           resources:
             requests:
