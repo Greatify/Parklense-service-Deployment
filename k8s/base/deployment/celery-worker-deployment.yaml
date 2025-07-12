@@ -43,7 +43,7 @@ spec:
           # Removed hosts-volume
       containers:
         - name: parklense-auth-celery-worker
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_production_settings_to_-20250711-145620-0592f5f
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_static_file_collectio-20250711-160034-d7d7e15
           imagePullPolicy: Always
           resources:
             requests:
@@ -67,6 +67,12 @@ spec:
               value: "1"
             - name: DJANGO_REDIS_PARSER_CLASS
               value: "redis.connection.DefaultParser"
+            - name: LOG_LEVEL
+              value: "DEBUG"
+            - name: DJANGO_LOG_LEVEL
+              value: "DEBUG"
+            - name: CELERY_LOG_LEVEL
+              value: "DEBUG"
           envFrom:
             - configMapRef:
                 name: parklense-env-config
@@ -76,7 +82,7 @@ spec:
             - config.celery
             - worker
             - -l
-            - info
+            - debug
             - -Q
             - default,email,sms
             - --concurrency=4

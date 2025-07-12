@@ -9,12 +9,12 @@ data:
   DJANGO_DEBUG: "True"
   DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0,parklense-auth-backend,parklense-auth-backend.dev-parklense-auth.svc.cluster.local,heycampus.in"
   
-  # Database Configuration
-  DB_NAME: "parklense_auth_dev"
-  DB_USER: "parklense_auth"
-  DB_PASSWORD: "cGFya2xlbnNlX2F1dGg="
-  DB_HOST: "13.200.3.100"
-  DB_PORT: "5432"
+  # # Database Configuration
+  # DB_NAME: "parklense_auth_dev"
+  # DB_USER: "parklense_auth"
+  # DB_PASSWORD: "cGFya2xlbnNlX2F1dGg="
+  # DB_HOST: "13.200.3.100"
+  # DB_PORT: "5432"
   
   # Redis Configuration
   REDIS_URL: "redis://redis-service:6379/0"
