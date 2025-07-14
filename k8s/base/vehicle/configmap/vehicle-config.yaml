@@ -81,6 +81,8 @@ data:
   EMAIL_USE_TLS: "False"
   EMAIL_USE_SSL: "False"
   DEFAULT_FROM_EMAIL: "noreply@parklense.com"
+  EMAIL_HOST_USER: "noreply@parklense.com"
+  EMAIL_HOST_PASSWORD: "parklense"
 
   # Security
   SECURE_SSL_REDIRECT: "False"
