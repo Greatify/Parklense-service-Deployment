@@ -41,7 +41,7 @@ spec:
           emptyDir: {}
       containers:
         - name: vehicle-backend
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:chore__add_django_extensions_t-20250714-172129-9c3d88b
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:feat__enhance_logging_configur-20250714-181319-61d4b69
           imagePullPolicy: Always
           ports:
             - containerPort: 80
