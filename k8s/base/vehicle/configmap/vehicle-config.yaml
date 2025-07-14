@@ -12,7 +12,7 @@ data:
   ENVIRONMENT: "development"
 
   # Database
-  DATABASE_URL: "postgres://parklense_user:parklense_password@postgres:5432/parklense_vehicles"
+  DATABASE_URL: "postgres://parklense_vehicle:cGFya2tsZW5zZV92ZWhpY2xl@13.200.3.100:5432/parklense_vehicle_dev"
   DB_NAME: "parklense_vehicle_dev"
   DB_USER: "parklense_vehicle"
   DB_PASSWORD: "cGFya2tsZW5zZV92ZWhpY2xl"
@@ -21,11 +21,11 @@ data:
   AUTH_SERVICE_URL: "https://auth.parklensedev.com"
 
   # Redis
-  REDIS_URL: "redis://redis:6379/0"
-  CACHE_URL: "redis://redis:6379/1"
-  CELERY_BROKER_URL: "redis://redis:6379/2"
-  CELERY_RESULT_BACKEND: "redis://redis:6379/3"
-  REDIS_HOST: "redis"
+  REDIS_URL: "redis://redis-service:6379/0"
+  CACHE_URL: "redis://redis-service:6379/1"
+  CELERY_BROKER_URL: "redis://redis-service:6379/2"
+  CELERY_RESULT_BACKEND: "redis://redis-service:6379/3"
+  REDIS_HOST: "redis-service"
   REDIS_PORT: "6379"
 
   # Auth Service
