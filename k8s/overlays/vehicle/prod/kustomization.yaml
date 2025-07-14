@@ -1,0 +1,116 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: prod-parklense-vehicle
+
+resources:
+  - ../../../base/vehicle
+  - storage/pvc.yaml
+
+# Environment-specific labels
+labels:
+  - pairs:
+      environment: production
+      tier: prod
+    includeSelectors: false
+
+# Patches for production environment
+patches:
+  # Vehicle Backend Deployment patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-vehicle-backend
+      spec:
+        replicas: 3
+        template:
+          spec:
+            serviceAccountName: parklense-vehicle-secret-sa
+            containers:
+            - name: vehicle-backend
+              resources:
+                requests:
+                  cpu: "2"
+                  memory: "4Gi"
+                limits:
+                  cpu: "4"
+                  memory: "8Gi"
+              env:
+              - name: WORKERS
+                value: "4"
+    target:
+      kind: Deployment
+      name: parklense-vehicle-backend
+
+  # Vehicle Ingress patches
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: parklense-vehicle-ingress
+        annotations:
+          alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
+          alb.ingress.kubernetes.io/cors-allow-origin: >-
+            https://parklense.com,https://www.parklense.com,https://vehicle.parklense.com
+          alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-prod-alb
+          alb.ingress.kubernetes.io/load-balancer-attributes: deletion_protection.enabled=true
+          alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:ap-south-1:399600302704:regional/webacl/parklense-vehicle-waf/WAF_ID
+      spec:
+        rules:
+        - host: vehicle.parklense.com
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-backend-service
+                  port:
+                    number: 80
+        - host: vehicle-api.parklense.com
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-backend-service
+                  port:
+                    number: 80
+        tls:
+          - hosts:
+              - vehicle.parklense.com
+              - vehicle-api.parklense.com
+            secretName: parklense-vehicle-tls
+    target:
+      kind: Ingress
+      name: parklense-vehicle-ingress
+
+  # Vehicle Secrets patches
+  - patch: |-
+      apiVersion: secrets-store.csi.x-k8s.io/v1
+      kind: SecretProviderClass
+      metadata:
+        name: parklense-vehicle-backend-secrets
+      spec:
+        parameters:
+          objects: |
+            - objectName: arn:aws:secretsmanager:ap-south-1:399600302704:secret:parklense-vehicle-service-prod-secret
+              objectAlias: ".env"
+              objectType: "secretsmanager"
+    target:
+      kind: SecretProviderClass
+      name: parklense-vehicle-backend-secrets
+
+  # Vehicle HPA patches - production scaling
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-vehicle-backend-autoscaler
+      spec:
+        minReplicas: 3
+        maxReplicas: 10
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-vehicle-backend-autoscaler 

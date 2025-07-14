@@ -1,0 +1,56 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: parklense-auth-ingress
+  labels:
+    app: parklense-auth-backend
+    component: ingress
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
+    alb.ingress.kubernetes.io/load-balancer-name: parklense-auth-alb
+
+    alb.ingress.kubernetes.io/cors-allow-origin: "https://parklense.com,https://www.parklense.com,https://*.parklense.com"
+    alb.ingress.kubernetes.io/cors-allow-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    alb.ingress.kubernetes.io/cors-allow-headers: "Content-Type,X-Requested-With,Authorization,Accept,Origin,Referer,User-Agent"
+    alb.ingress.kubernetes.io/cors-allow-credentials: "true"
+    alb.ingress.kubernetes.io/cors-max-age: "86400"
+    # Security headers
+    alb.ingress.kubernetes.io/actions.ssl-redirect: |
+      {
+        "Type": "redirect",
+        "RedirectConfig": {
+          "Protocol": "HTTPS",
+          "Port": "443",
+          "StatusCode": "HTTP_301"
+        }
+      }
+    alb.ingress.kubernetes.io/actions.response-headers: |
+      {
+        "Type": "fixed-response",
+        "FixedResponseConfig": {
+          "ContentType": "text/plain",
+          "StatusCode": "200",
+          "MessageBody": "OK"
+        }
+      }
+spec:
+  rules:
+    - host: auth.parklensedev.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - auth.parklensedev.com
+      secretName: parklense-auth-tls 

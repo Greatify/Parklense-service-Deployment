@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: parklense-auth-pvc
+  labels:
+    environment: development
+    app: parklense-auth-backend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: gp3
+  volumeName: parklense-auth-dev-pv
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: parklense-auth-redis-pvc
+  labels:
+    environment: development
+    app: parklense-auth-redis
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: gp3
+  volumeName: parklense-auth-redis-dev-pv
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: parklense-auth-beat-pvc
+  labels:
+    environment: development
+    app: parklense-auth-celery-beat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: gp3
+  volumeName: parklense-auth-beat-dev-pv
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vehicle-media-pvc
+  labels:
+    environment: development
+    app: parklense-vehicle-backend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: gp3
+  volumeName: vehicle-media-dev-pv
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vehicle-static-pvc
+  labels:
+    environment: development
+    app: parklense-vehicle-backend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: gp3
+  volumeName: vehicle-static-dev-pv 

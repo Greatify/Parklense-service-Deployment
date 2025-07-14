@@ -1,0 +1,284 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: staging-parklense-auth
+
+resources:
+  - ../../../base/auth
+  - storage/pv.yaml
+  - storage/pvc.yaml
+
+# Environment-specific labels
+labels:
+  - pairs:
+      environment: staging
+      tier: staging
+    includeSelectors: false
+
+# Patches for staging environment
+patches:
+  # Backend Deployment patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-backend
+      spec:
+        replicas: 2
+        template:
+          spec:
+            serviceAccountName: staging-parklense-auth-sa
+            containers:
+            - name: parklense-auth-backend
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: "2Gi"
+                limits:
+                  cpu: "2"
+                  memory: "4Gi"
+              env:
+              - name: WORKERS
+                value: "3"
+    target:
+      kind: Deployment
+      name: parklense-auth-backend
+
+  # Celery Worker patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-celery-worker
+      spec:
+        replicas: 2
+        template:
+          spec:
+            serviceAccountName: staging-parklense-auth-sa
+            containers:
+            - name: celery-worker
+              resources:
+                requests:
+                  cpu: "0.5"
+                  memory: "1Gi"
+                limits:
+                  cpu: "1"
+                  memory: "2Gi"
+              command:
+                - celery
+                - -A
+                - config.celery
+                - worker
+                - -l
+                - info
+                - -Q
+                - default,email,sms
+                - --concurrency=3
+                - --prefetch-multiplier=1
+                - --max-tasks-per-child=1000
+    target:
+      kind: Deployment
+      name: parklense-auth-celery-worker
+
+  # Celery Beat patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-celery-beat
+      spec:
+        replicas: 1
+        template:
+          spec:
+            serviceAccountName: staging-parklense-auth-sa
+            containers:
+            - name: celery-beat
+              resources:
+                requests:
+                  cpu: "0.25"
+                  memory: "512Mi"
+                limits:
+                  cpu: "0.5"
+                  memory: "1Gi"
+    target:
+      kind: Deployment
+      name: parklense-auth-celery-beat
+
+  # Redis patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-auth-redis
+      spec:
+        replicas: 1
+        template:
+          spec:
+            serviceAccountName: staging-parklense-auth-sa
+            containers:
+            - name: redis
+              resources:
+                requests:
+                  cpu: "0.25"
+                  memory: "512Mi"
+                limits:
+                  cpu: "0.5"
+                  memory: "1Gi"
+    target:
+      kind: Deployment
+      name: parklense-auth-redis
+
+  # Ingress patches
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: parklense-auth-ingress
+        annotations:
+          alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT:certificate/STAGING_CERT_ID
+          alb.ingress.kubernetes.io/cors-allow-origin: >-
+            https://staging.parklense.com,https://staging-auth.parklense.com
+      spec:
+        rules:
+        - host: staging-auth.parklense.com
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-auth-backend-service
+                  port:
+                    number: 80
+        tls:
+          - hosts:
+              - staging-auth.parklense.com
+            secretName: parklense-auth-tls
+    target:
+      kind: Ingress
+      name: parklense-auth-ingress
+
+  # Secrets patches
+  - patch: |-
+      apiVersion: secrets-store.csi.x-k8s.io/v1
+      kind: SecretProviderClass
+      metadata:
+        name: parklense-auth-backend-secrets
+      spec:
+        parameters:
+          objects: |
+            - objectName: arn:aws:secretsmanager:REGION:ACCOUNT:secret:parklense-auth-staging-secrets-SUFFIX
+              objectAlias: ".env"
+              objectType: "secretsmanager"
+              objectVersionStage: "AWSCURRENT"
+    target:
+      kind: SecretProviderClass
+      name: parklense-auth-backend-secrets
+
+  # Service Account patches
+  - patch: |-
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: parklense-auth-sa
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT:role/parklense-auth-staging-role
+    target:
+      kind: ServiceAccount
+      name: parklense-auth-sa
+
+  # HPA patches - staging scaling
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-auth-backend-hpa
+      spec:
+        minReplicas: 2
+        maxReplicas: 6
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-auth-backend-hpa
+
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-auth-celery-worker-hpa
+      spec:
+        minReplicas: 1
+        maxReplicas: 4
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-auth-celery-worker-hpa
+
+  # Vehicle Service patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-vehicle-backend
+      spec:
+        replicas: 2
+        template:
+          spec:
+            serviceAccountName: staging-parklense-vehicle-sa
+            containers:
+            - name: vehicle-backend
+              resources:
+                requests:
+                  cpu: "0.5"
+                  memory: "1Gi"
+                limits:
+                  cpu: "1"
+                  memory: "2Gi"
+              env:
+              - name: ALLOWED_HOSTS
+                value: "vehicle.parklensedev.com,*.vehicle.parklensedev.com"
+              - name: CORS_ALLOWED_ORIGINS
+                value: "https://vehicle.parklensedev.com,https://*.vehicle.parklensedev.com"
+    target:
+      kind: Deployment
+      name: parklense-vehicle-backend
+
+  # Vehicle Ingress patches
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: parklense-vehicle-ingress
+        annotations:
+          alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
+          alb.ingress.kubernetes.io/cors-allow-origin: >-
+            https://parklensedev.com,https://vehicle.parklensedev.com
+      spec:
+        rules:
+        - host: vehicle.parklensedev.com
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-backend-service
+                  port:
+                    number: 80
+        tls:
+          - hosts:
+              - vehicle.parklensedev.com
+            secretName: parklense-vehicle-tls
+    target:
+      kind: Ingress
+      name: parklense-vehicle-ingress
+
+  # Vehicle HPA patches
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-vehicle-backend-autoscaler
+      spec:
+        minReplicas: 2
+        maxReplicas: 6
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-vehicle-backend-autoscaler 

@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Vehicle Service resources only
+resources:
+  # Vehicle Service - Core deployments
+  - deployment/vehicle-backend-deployment.yaml
+  
+  # Vehicle Service - Services
+  - services/vehicle-backend-service.yaml
+  
+  # Vehicle Service - Network
+  - ingress/vehicle-ingress.yaml
+  
+  # Vehicle Service - Configurations
+  - configmap/vehicle-config.yaml
+  - secrets/parklense-vehicle-secrets.yaml
+  - secrets/parklense-vehicle-sa.yaml
+  
+  # Vehicle Service - Autoscaling
+  - autoscaling/vehicle-backend-autoscaler.yaml
+
+# Common labels for vehicle service
+labels:
+  - pairs:
+      app.kubernetes.io/name: parklense-vehicle
+      app.kubernetes.io/part-of: parklense-platform
+    includeSelectors: true 

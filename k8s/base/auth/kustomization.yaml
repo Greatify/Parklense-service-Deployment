@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Auth Service resources only
+resources:
+  # Auth Service - Core deployments
+  - deployment/auth-backend-deployment.yaml
+  - deployment/celery-worker-deployment.yaml
+  - deployment/celery-beat-deployment.yaml
+  - deployment/redis-deployment.yaml
+  
+  # Auth Service - Services
+  - services/auth-backend-service.yaml
+  - services/redis-service.yaml
+  
+  # Auth Service - Network
+  - ingress/ingress.yaml
+  
+  # Auth Service - Configurations
+  - configmap/nginx-config.yaml
+  - configmap/env-config.yaml
+  - secrets/parklense-auth-secrets.yaml
+  
+  # Auth Service - Autoscaling
+  - autoscaling/auth-backend-autoscaler.yaml
+  - autoscaling/celery-worker-autoscaler.yaml
+  - autoscaling/redis-autoscaler.yaml
+
+# Common labels for auth service
+labels:
+  - pairs:
+      app.kubernetes.io/name: parklense-auth
+      app.kubernetes.io/part-of: parklense-platform
+    includeSelectors: true 

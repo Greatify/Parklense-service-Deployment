@@ -1,0 +1,105 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: staging-parklense-vehicle
+
+resources:
+  - ../../../base/vehicle
+  - storage/pvc.yaml
+
+# Environment-specific labels
+labels:
+  - pairs:
+      environment: staging
+      tier: staging
+    includeSelectors: false
+
+# Patches for staging environment
+patches:
+  # Vehicle Backend Deployment patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-vehicle-backend
+      spec:
+        replicas: 2
+        template:
+          spec:
+            serviceAccountName: parklense-vehicle-secret-sa
+            containers:
+            - name: vehicle-backend
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: "2Gi"
+                limits:
+                  cpu: "2"
+                  memory: "4Gi"
+              env:
+              - name: WORKERS
+                value: "3"
+    target:
+      kind: Deployment
+      name: parklense-vehicle-backend
+
+  # Vehicle Ingress patches
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: parklense-vehicle-ingress
+        annotations:
+          alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
+          alb.ingress.kubernetes.io/cors-allow-origin: >-
+            https://staging.parklense.com,https://*.staging.parklense.com
+          alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-staging-alb
+          alb.ingress.kubernetes.io/load-balancer-attributes: >-
+            idle_timeout.timeout_seconds=60,deletion_protection.enabled=false
+      spec:
+        rules:
+        - host: vehicle.staging.parklense.com
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-backend-service
+                  port:
+                    number: 80
+        tls:
+          - hosts:
+              - vehicle.staging.parklense.com
+            secretName: parklense-vehicle-tls
+    target:
+      kind: Ingress
+      name: parklense-vehicle-ingress
+
+  # Vehicle Secrets patches
+  - patch: |-
+      apiVersion: secrets-store.csi.x-k8s.io/v1
+      kind: SecretProviderClass
+      metadata:
+        name: parklense-vehicle-backend-secrets
+      spec:
+        parameters:
+          objects: |
+            - objectName: arn:aws:secretsmanager:ap-south-1:399600302704:secret:parklense-vehicle-service-staging-secret
+              objectAlias: ".env"
+              objectType: "secretsmanager"
+    target:
+      kind: SecretProviderClass
+      name: parklense-vehicle-backend-secrets
+
+  # Vehicle HPA patches - staging scaling
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-vehicle-backend-autoscaler
+      spec:
+        minReplicas: 2
+        maxReplicas: 6
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-vehicle-backend-autoscaler 

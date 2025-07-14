@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parklense-vehicle-backend
+  labels:
+    app: parklense-vehicle-backend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: parklense-vehicle-backend
+  template:
+    metadata:
+      labels:
+        app: parklense-vehicle-backend
+        version: v1
+    spec:
+      containers:
+      - name: vehicle-backend
+        image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: DJANGO_SETTINGS_MODULE
+          value: "config.settings.production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: parklense-vehicle-backend-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: parklense-vehicle-backend-secrets
+              key: redis-url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: parklense-vehicle-backend-secrets
+              key: secret-key
+        - name: ALLOWED_HOSTS
+          value: "vehicle.parklensedev.com"
+        - name: CORS_ALLOWED_ORIGINS
+          value: "https://vehicle.parklensedev.com"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        # livenessProbe:
+        #   httpGet:
+        #     path: /api/health/
+        #     port: 80
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   failureThreshold: 3
+        # readinessProbe:
+        #   httpGet:
+        #     path: /api/health/
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 5
+        #   timeoutSeconds: 3
+        #   failureThreshold: 3
+        # volumeMounts:
+        # - name: media-storage
+        #   mountPath: /app/media
+        # - name: static-storage
+        #   mountPath: /app/staticfiles
+      # volumes:
+      # - name: media-storage
+      #   persistentVolumeClaim:
+      #     claimName: vehicle-media-pvc
+      # - name: static-storage
+      #   persistentVolumeClaim:
+      #     claimName: vehicle-static-pvc
+      # imagePullSecrets:
+      # - name: ecr-registry-secret 
