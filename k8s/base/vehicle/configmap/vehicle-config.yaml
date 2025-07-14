@@ -18,6 +18,7 @@ data:
   DB_PASSWORD: "cGFya2tsZW5zZV92ZWhpY2xl"
   DB_HOST: "13.200.3.100"
   DB_PORT: "5432"
+  AUTH_SERVICE_URL: "https://auth.parklensedev.com"
 
   # Redis
   REDIS_URL: "redis://redis:6379/0"
@@ -28,7 +29,6 @@ data:
   REDIS_PORT: "6379"
 
   # Auth Service
-  AUTH_SERVICE_URL: "http://localhost:8000"
   AUTH_SERVICE_API_KEY: "your-auth-service-key"
   AUTH_SERVICE_TIMEOUT: "30"
   JWT_SECRET_KEY: "your-jwt-secret-key"
