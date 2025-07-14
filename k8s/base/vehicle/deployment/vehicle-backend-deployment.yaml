@@ -25,21 +25,21 @@ spec:
           env:
             - name: DJANGO_SETTINGS_MODULE
               value: "config.settings.production"
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: parklense-vehicle-backend-secrets
-                  key: database-url
-            - name: REDIS_URL
-              valueFrom:
-                secretKeyRef:
-                  name: parklense-vehicle-backend-secrets
-                  key: redis-url
-            - name: SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: parklense-vehicle-backend-secrets
-                  key: secret-key
+            # - name: DATABASE_URL
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: parklense-vehicle-backend-secrets
+            #       key: database-url
+            # - name: REDIS_URL
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: parklense-vehicle-backend-secrets
+            #       key: redis-url
+            # - name: SECRET_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: parklense-vehicle-backend-secrets
+            #       key: secret-key
             - name: ALLOWED_HOSTS
               value: "vehicle.parklensedev.com"
             - name: CORS_ALLOWED_ORIGINS

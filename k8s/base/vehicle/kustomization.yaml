@@ -15,7 +15,7 @@ resources:
   # Vehicle Service - Configurations
   - configmap/vehicle-config.yaml
   - secrets/parklense-vehicle-secrets.yaml
-  - secrets/parklense-vehicle-sa.yaml
+  # - secrets/parklense-vehicle-sa.yaml
   
   # Vehicle Service - Autoscaling
   - autoscaling/vehicle-backend-autoscaler.yaml
