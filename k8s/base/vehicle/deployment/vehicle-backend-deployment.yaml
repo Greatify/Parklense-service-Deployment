@@ -16,47 +16,88 @@ spec:
         app: parklense-vehicle-backend
         version: v1
     spec:
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: parklense-vehicle-secrets-volume
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: parklense-vehicle-backend-secrets
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: nginx-cache
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: nginx-config
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+        - name: parklense-vehicle-storage
+          emptyDir: {}
+        - name: logs-volume
+          emptyDir: {}
       containers:
         - name: vehicle-backend
           image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:fix__update_deployment_reposit-20250714-134950-4f56656
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
               name: http
           env:
             - name: DJANGO_SETTINGS_MODULE
               value: "config.settings.production"
-            # - name: DATABASE_URL
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: parklense-vehicle-backend-secrets
-            #       key: database-url
-            # - name: REDIS_URL
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: parklense-vehicle-backend-secrets
-            #       key: redis-url
-            # - name: SECRET_KEY
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: parklense-vehicle-backend-secrets
-            #       key: secret-key
+            - name: REDIS_URL
+              value: "redis://redis-service:6379/0"
+            - name: WORKERS
+              value: "4"
+            - name: DJANGO_SECRET_KEY
+              value: "ocn+t!pvvi&tf3_s&_biac0q7+nmo=j^$7e2%xhto2_y10)g$p"
+            - name: PORT
+              value: "8000"
+            - name: WITH_NGINX
+              value: "true"
+            - name: DJANGO_REDIS_PARSER_CLASS
+              value: "redis.connection.DefaultParser"
+            - name: LOG_LEVEL
+              value: "DEBUG"
+            - name: DJANGO_LOG_LEVEL
+              value: "DEBUG"
+            - name: UVICORN_LOG_LEVEL
+              value: "debug"
             - name: ALLOWED_HOSTS
               value: "vehicle.parklensedev.com"
             - name: CORS_ALLOWED_ORIGINS
               value: "https://vehicle.parklensedev.com"
+          envFrom:
+            - configMapRef:
+                name: vehicle-config
+          volumeMounts:
+            - name: parklense-vehicle-secrets-volume
+              mountPath: /mnt/secret-store
+              readOnly: true
+            - name: config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: parklense-vehicle-storage
+              mountPath: /app/media
+            - name: logs-volume
+              mountPath: /app/logs
+          lifecycle:
+            postStart:
+              exec:
+                command: ['sh', '-c', 'cp -R /mnt/secret-store/.env /app/.env']
           resources:
             requests:
               memory: "256Mi"
               cpu: "250m"
             limits:
               memory: "512Mi"
-              cpu: "500m"
-              # volumes:
-              # - name: media-storage
-              #   persistentVolumeClaim:
-              #     claimName: vehicle-media-pvc
-              # - name: static-storage
-              #   persistentVolumeClaim:
-              #     claimName: vehicle-static-pvc
-              # imagePullSecrets:
-              # - name: ecr-registry-secret 
+              cpu: "500m" 
