@@ -43,7 +43,7 @@ spec:
           # Removed hosts-volume
       containers:
         - name: parklense-auth-celery-worker
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Comment_out_unused_views_and_m-20250715-163505-6e37342
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Comment_out_unused_mobile_and_-20250715-164306-dc6d8d6
           imagePullPolicy: Always
           resources:
             requests:
