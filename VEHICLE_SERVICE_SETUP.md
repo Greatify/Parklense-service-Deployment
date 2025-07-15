@@ -80,8 +80,8 @@ DJANGO_SETTINGS_MODULE: config.settings.production
 DATABASE_URL: postgresql://vehicle_user:vehicle_password@vehicle_db:5432/vehicle_database
 REDIS_URL: redis://redis-service:6379/0
 SECRET_KEY: vehicle_secret_key_for_production_environment
-ALLOWED_HOSTS: vehicle.heycampus.in,*.vehicle.heycampus.in
-CORS_ALLOWED_ORIGINS: https://vehicle.heycampus.in,https://*.vehicle.heycampus.in
+ALLOWED_HOSTS: vehicle.parklensedev.com,*.vehicle.parklensedev.com
+CORS_ALLOWED_ORIGINS: https://vehicle.parklensedev.com,https://*.vehicle.parklensedev.com
 ```
 
 ### Resource Allocation

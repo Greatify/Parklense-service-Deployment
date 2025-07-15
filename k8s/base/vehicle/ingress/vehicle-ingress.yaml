@@ -4,26 +4,27 @@ metadata:
   name: parklense-vehicle-ingress
   annotations:
     kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip"
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3"
-    alb.ingress.kubernetes.io/ssl-redirect: "443"
-    alb.ingress.kubernetes.io/healthcheck-path: "/api/health/"
-    alb.ingress.kubernetes.io/healthcheck-port: "80"
-    alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
-    alb.ingress.kubernetes.io/success-codes: "200,302"
-    alb.ingress.kubernetes.io/group.name: "parklense-vehicle"
-    alb.ingress.kubernetes.io/group.order: "1"
+    alb.ingress.kubernetes.io/scheme: internal   # 🔑 <-- Internal!
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-alb
+
+    # CORS (optional, can be handled by API Gateway instead)
+    alb.ingress.kubernetes.io/cors-allow-origin: "*"
+    alb.ingress.kubernetes.io/cors-allow-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    alb.ingress.kubernetes.io/cors-allow-headers: "*"
+    alb.ingress.kubernetes.io/cors-allow-credentials: "true"
+    alb.ingress.kubernetes.io/cors-max-age: "86400"
+
 spec:
   rules:
-  - host: vehicle.parklensedev.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: parklense-vehicle-backend-service
-            port:
-              number: 80 
+    - host: vehicle.parklensedev.internal  # ✅ Use a *private hosted zone* or internal DNS!
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-backend-service
+                port:
+                  number: 80

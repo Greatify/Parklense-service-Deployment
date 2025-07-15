@@ -7,7 +7,7 @@ metadata:
 data:
   # Django Settings
   DJANGO_DEBUG: "True"
-  DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0,parklense-auth-backend,parklense-auth-backend.dev-parklense-auth.svc.cluster.local,parklensedev.com"
+  DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0,parklense-auth-backend,parklense-auth-backend.dev-parklense-auth.svc.cluster.local,auth.parklensedev.com,api.parklensedev.com"
   
   # # Database Configuration
   # DB_NAME: "parklense_auth_dev"
@@ -62,7 +62,7 @@ data:
   DJANGO_SETTINGS_MODULE: "config.settings.production"
   
   # Security Settings
-  CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:19006"
+  CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:19006,https://api.parklensedev.com"
   SECURE_SSL_REDIRECT: "False"
   SESSION_COOKIE_SECURE: "False"
   CSRF_COOKIE_SECURE: "False"
@@ -83,8 +83,8 @@ data:
   RATELIMIT_WINDOW: "3600"
   
   # Microservice URLs
-  VEHICLE_SERVICE_URL: "http://localhost:8001"
+  VEHICLE_SERVICE_URL: "https://api.parklensedev.com/vehicle/"
   PARKING_SERVICE_URL: "http://localhost:8002"
   
-  FRONTEND_URL: "https://heycampus.in" 
+  FRONTEND_URL: "https://parklensedev.com" 
   WITH_NGINX: "true" 

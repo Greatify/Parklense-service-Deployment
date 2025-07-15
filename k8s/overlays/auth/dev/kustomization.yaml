@@ -146,10 +146,10 @@ patches:
             idle_timeout.timeout_seconds=60,deletion_protection.enabled=false
       spec:
         rules:
-        - host: auth.parklensedev.com
+        - host: api.parklensedev.com
           http:
             paths:
-            - path: /
+            - path: /api
               pathType: Prefix
               backend:
                 service:
@@ -158,7 +158,7 @@ patches:
                     number: 80
         tls:
           - hosts:
-              - auth.parklensedev.com
+              - api.parklensedev.com
             secretName: parklense-auth-tls
     target:
       kind: Ingress
