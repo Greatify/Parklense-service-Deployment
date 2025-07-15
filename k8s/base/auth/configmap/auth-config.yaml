@@ -7,8 +7,8 @@ metadata:
 data:
   # Django Settings
   DJANGO_DEBUG: "True"
-  DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0,parklense-auth-backend,parklense-auth-backend.dev-parklense-auth.svc.cluster.local,auth.parklensedev.com,api.parklensedev.com"
-  
+  # DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0,parklense-auth-backend,parklense-auth-backend.dev-parklense-auth.svc.cluster.local,auth.parklensedev.com,api.parklensedev.com"
+  DJANGO_ALLOWED_HOSTS: "*"
   # # Database Configuration
   # DB_NAME: "parklense_auth_dev"
   # DB_USER: "parklense_auth"

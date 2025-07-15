@@ -1,0 +1,97 @@
+openapi: "3.0.1"
+info:
+  title: "Parklense Backend Service Dev API"
+  version: "2025-07-15 07:59:54UTC"
+servers:
+- url: "https://api.parklensedev.com/{basePath}"
+  variables:
+    basePath:
+      default: ""
+
+paths:
+  # Auth Service Endpoints
+  /auth/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      description: "Auth service proxy path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Default response for ANY /auth/{proxy+}"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-887676365.ap-south-1.elb.amazonaws.com/auth/{proxy}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+        requestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
+
+  # Vehicle Service Endpoints  
+  /vehicle/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      description: "Vehicle service proxy path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Default response for ANY /vehicle/{proxy+}"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://internal-parklense-vehicle-dev-alb-760645548.ap-south-1.elb.amazonaws.com/api/{proxy}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+        requestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
+
+  # Health Check Endpoints
+  /health:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Health check response"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-887676365.ap-south-1.elb.amazonaws.com/health/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+x-amazon-apigateway-cors:
+  allowMethods:
+  - "GET"
+  - "POST"
+  - "PUT"
+  - "DELETE"
+  - "PATCH"
+  - "OPTIONS"
+  allowHeaders:
+  - "Content-Type"
+  - "X-Amz-Date"
+  - "Authorization"
+  - "X-Api-Key"
+  - "X-Amz-Security-Token"
+  - "X-Request-ID"
+  - "X-Correlation-ID"
+  exposeHeaders:
+  - "X-Correlation-ID"
+  - "X-Response-Time"
+  - "X-API-Version"
+  maxAge: 86400
+  allowCredentials: true
+  allowOrigins:
+  - "*"
+
+x-amazon-apigateway-importexport-version: "1.0" 
