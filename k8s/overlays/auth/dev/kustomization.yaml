@@ -149,7 +149,7 @@ patches:
         - host: api.parklensedev.com
           http:
             paths:
-            - path: /api
+            - path: /
               pathType: Prefix
               backend:
                 service:

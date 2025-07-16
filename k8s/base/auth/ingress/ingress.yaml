@@ -6,23 +6,60 @@ metadata:
     app: parklense-auth-backend
   annotations:
     kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/scheme: internet-facing   # 🔑 <-- Internal!
+    alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
     alb.ingress.kubernetes.io/load-balancer-name: parklense-auth-alb
-
     alb.ingress.kubernetes.io/cors-allow-origin: "*"
     alb.ingress.kubernetes.io/cors-allow-methods: "GET,POST,PUT,DELETE,OPTIONS"
     alb.ingress.kubernetes.io/cors-allow-headers: "*"
     alb.ingress.kubernetes.io/cors-allow-credentials: "true"
     alb.ingress.kubernetes.io/cors-max-age: "86400"
+    alb.ingress.kubernetes.io/group.name: parklense-auth
+    alb.ingress.kubernetes.io/ip-address-type: ipv4
+    alb.ingress.kubernetes.io/healthcheck-path: "/health/"
+    alb.ingress.kubernetes.io/healthcheck-port: "80"
+    alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
+    alb.ingress.kubernetes.io/success-codes: "200,404"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/timeout-seconds: "5"
+    alb.ingress.kubernetes.io/interval-seconds: "30"
 
 spec:
   rules:
-    - host: api.parklensedev.com  # ✅ Internal DNS!
+    - host: api.parklensedev.com
       http:
         paths:
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
           - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          - path: /
             pathType: Prefix
             backend:
               service:
