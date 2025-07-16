@@ -31,6 +31,7 @@ spec:
     - host: vehicle.parklensedev.com
       http:
         paths:
+          # Health check endpoint
           - path: /health
             pathType: Prefix
             backend:
@@ -38,21 +39,16 @@ spec:
                 name: parklense-vehicle-backend-service
                 port:
                   number: 80
-          - path: /api
+          # Vehicle API endpoints
+          - path: /api/v1
             pathType: Prefix
             backend:
               service:
                 name: parklense-vehicle-backend-service
                 port:
                   number: 80
+          # Admin interface
           - path: /admin
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-vehicle-backend-service
-                port:
-                  number: 80
-          - path: /
             pathType: Prefix
             backend:
               service:

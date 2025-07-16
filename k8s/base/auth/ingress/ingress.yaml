@@ -31,6 +31,7 @@ spec:
     - host: api.parklensedev.com
       http:
         paths:
+          # Health check endpoint
           - path: /health
             pathType: Prefix
             backend:
@@ -38,6 +39,8 @@ spec:
                 name: parklense-auth-backend-service
                 port:
                   number: 80
+          
+          # Auth service endpoints
           - path: /auth
             pathType: Prefix
             backend:
@@ -45,13 +48,34 @@ spec:
                 name: parklense-auth-backend-service
                 port:
                   number: 80
-          - path: /api
+          
+          # Profile service endpoints
+          - path: /profile
             pathType: Prefix
             backend:
               service:
                 name: parklense-auth-backend-service
                 port:
                   number: 80
+          
+          # API v1 endpoints (backward compatibility)
+          - path: /api/v1/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          
+          - path: /api/v1/profile
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          
+          # Admin interface
           - path: /admin
             pathType: Prefix
             backend:
@@ -59,7 +83,17 @@ spec:
                 name: parklense-auth-backend-service
                 port:
                   number: 80
-          - path: /
+          
+          # API documentation
+          - path: /docs
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          
+          - path: /schema
             pathType: Prefix
             backend:
               service:
