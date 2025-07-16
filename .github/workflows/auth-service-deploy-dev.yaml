@@ -74,15 +74,15 @@ jobs:
       - name: Deploy auth service to development environment
         run: |
           kubectl apply -k k8s/overlays/auth/dev
-          kubectl rollout status deployment/parklense-auth-backend -n dev-parklense-auth --timeout=300s
-          kubectl rollout status deployment/parklense-auth-celery-worker -n dev-parklense-auth --timeout=300s
-          kubectl rollout status deployment/parklense-auth-celery-beat -n dev-parklense-auth --timeout=300s
+          kubectl rollout status deployment/parklense-auth-backend -n dev-parklense --timeout=300s
+          kubectl rollout status deployment/parklense-auth-celery-worker -n dev-parklense --timeout=300s
+          kubectl rollout status deployment/parklense-auth-celery-beat -n dev-parklense --timeout=300s
 
       - name: Verify auth deployment
         run: |
-          kubectl get pods -n dev-parklense-auth -l app=parklense-auth-backend
-          kubectl get services -n dev-parklense-auth -l app=parklense-auth-backend
-          kubectl get ingress -n dev-parklense-auth
+          kubectl get pods -n dev-parklense -l app=parklense-auth-backend
+          kubectl get services -n dev-parklense -l app=parklense-auth-backend
+          kubectl get ingress -n dev-parklense
 
       - name: Run auth health checks
         run: |

@@ -65,7 +65,7 @@ validate_environment() {
     case $ENVIRONMENT in
         "dev")
             CLUSTER_NAME="dev-cluster"
-            NAMESPACE="dev-parklense-auth"
+            NAMESPACE="dev-parklense"
             ;;
         "staging")
             CLUSTER_NAME="staging-cluster"
