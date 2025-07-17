@@ -153,13 +153,31 @@ paths:
   /docs:
     get:
       summary: API Documentation
-      description: Swagger UI documentation
+      description: Swagger UI documentation (Auth Service)
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: GET
-        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/docs/
+        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/swagger/
         requestParameters:
           overwrite:header.Host: "api.parklensedev.com"
+          overwrite:path: "/api/v1/swagger/"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+
+  /vehicle/docs:
+    get:
+      summary: Vehicle API Documentation
+      description: Swagger UI documentation (Vehicle Service)
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: GET
+        uri: http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/docs/
+        requestParameters:
+          overwrite:header.Host: "vehicle.parklensedev.com"
+          overwrite:path: "/api/docs/"
         responses:
           default:
             statusCode: "200"
@@ -168,19 +186,57 @@ paths:
 
   /schema:
     get:
-      summary: OpenAPI Schema
-      description: OpenAPI schema endpoint
+      summary: OpenAPI Schema (Auth Service)
+      description: OpenAPI schema endpoint for Auth Service
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: GET
         uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/schema/
         requestParameters:
           overwrite:header.Host: "api.parklensedev.com"
+          overwrite:path: "/api/schema/"
         responses:
           default:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin: "'*'"
+
+  /vehicle/schema:
+    get:
+      summary: OpenAPI Schema (Vehicle Service)
+      description: OpenAPI schema endpoint for Vehicle Service
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: GET
+        uri: http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/schema/
+        requestParameters:
+          overwrite:header.Host: "vehicle.parklensedev.com"
+          overwrite:path: "/api/schema/"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+
+  # Static files for Swagger UI
+  /static/{proxy+}:
+    x-amazon-apigateway-any-method:
+      summary: Static files
+      description: Static files for Swagger UI and other assets
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: ANY
+        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/static/{proxy}
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+          overwrite:path: "/static/{proxy}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,HEAD,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
 
   # Catch-all route (fallback to auth service)
   /{proxy+}:

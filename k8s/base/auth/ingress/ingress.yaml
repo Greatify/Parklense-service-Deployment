@@ -31,8 +31,8 @@ spec:
     - host: api.parklensedev.com
       http:
         paths:
-          # Health check endpoint
-          - path: /health
+          # Root path - redirect to docs or show API info
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -40,64 +40,74 @@ spec:
                 port:
                   number: 80
           
-          # Auth service endpoints
-          - path: /auth
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-auth-backend-service
-                port:
-                  number: 80
+          # # Health check endpoint
+          # - path: /health
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
           
-          # Profile service endpoints
-          - path: /profile
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-auth-backend-service
-                port:
-                  number: 80
+          # # Auth service endpoints
+          # - path: /auth
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
           
-          # API v1 endpoints (backward compatibility)
-          - path: /api/v1/auth
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-auth-backend-service
-                port:
-                  number: 80
+          # # Profile service endpoints
+          # - path: /profile
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
           
-          - path: /api/v1/profile
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-auth-backend-service
-                port:
-                  number: 80
+          # # API v1 endpoints (backward compatibility)
+          # - path: /api/v1/auth
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
           
-          # Admin interface
-          - path: /admin
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-auth-backend-service
-                port:
-                  number: 80
+          # - path: /api/v1/profile
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
           
-          # API documentation
-          - path: /docs
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-auth-backend-service
-                port:
-                  number: 80
+          # # API v1 Swagger UI
+          # - path: /api/v1/swagger
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
           
-          - path: /schema
-            pathType: Prefix
-            backend:
-              service:
-                name: parklense-auth-backend-service
-                port:
-                  number: 80
-  
+          # # API v1 Schema
+          # - path: /api/schema
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
+          
+          # # Admin interface
+          # - path: /admin
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: parklense-auth-backend-service
+          #       port:
+          #         number: 80
+        
