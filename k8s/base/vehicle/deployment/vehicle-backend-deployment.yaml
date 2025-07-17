@@ -41,7 +41,7 @@ spec:
           emptyDir: {}
       containers:
         - name: vehicle-backend
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:chore__correct_spelling_of_dja-20250714-182143-92ca1b9
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:feat__refactor_Docker_setup_an-20250717-114907-b556411
           imagePullPolicy: Always
           ports:
             - containerPort: 80
