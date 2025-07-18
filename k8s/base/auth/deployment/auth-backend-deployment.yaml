@@ -57,7 +57,7 @@ spec:
           # Removed hosts-volume
       containers:
         - name: parklense-auth-backend
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Add__package_to_requirements_f-20250718-070012-8cc5edb
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_logging_configuration-20250718-074947-1f781cc
           imagePullPolicy: Always
           resources:
             requests:
