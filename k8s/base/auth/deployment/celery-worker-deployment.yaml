@@ -43,7 +43,7 @@ spec:
           # Removed hosts-volume
       containers:
         - name: parklense-auth-celery-worker
-          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_project_configuration-20250725-043350-b0c34bf
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Merge_pull_request__6_from_Gre-20250726-075344-f10b021
           imagePullPolicy: Always
           resources:
             requests:
