@@ -21,6 +21,9 @@ resources:
   - configmap/auth-config.yaml
   - secrets/parklense-auth-secrets.yaml
   
+  # Auth Service - Storage
+  - storage/efs-storage-class.yaml
+  
   # Auth Service - Autoscaling
   - autoscaling/auth-backend-autoscaler.yaml
   - autoscaling/celery-worker-autoscaler.yaml

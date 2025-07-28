@@ -37,7 +37,8 @@ spec:
             volumeAttributes:
               secretProviderClass: parklense-auth-backend-secrets
         - name: parklense-auth-storage
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: parklense-auth-pvc
         - name: logs-volume
           emptyDir: {}
         - name: beat-schedule

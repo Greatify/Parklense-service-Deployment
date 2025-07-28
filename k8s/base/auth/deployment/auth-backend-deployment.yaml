@@ -47,11 +47,11 @@ spec:
             items:
               - key: nginx.conf
                 path: nginx.conf
-        # - name: parklense-auth-storage
-        #   persistentVolumeClaim:
-        #     claimName: parklense-auth-pvc
         - name: parklense-auth-storage
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: parklense-auth-pvc
+        # - name: parklense-auth-storage
+        #   emptyDir: {}
         - name: logs-volume
           emptyDir: {}
           # Removed hosts-volume

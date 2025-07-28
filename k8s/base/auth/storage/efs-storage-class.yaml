@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+    description: "EFS Storage Class for Parklense Auth Service"
+provisioner: efs.csi.aws.com
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+reclaimPolicy: Retain 

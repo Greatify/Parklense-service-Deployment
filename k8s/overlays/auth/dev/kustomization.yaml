@@ -4,8 +4,8 @@ namespace: dev-parklense
 
 resources:
   - ../../../base/auth
-  # - storage/pv.yaml
-  # - storage/pvc.yaml
+  - storage/pv.yaml
+  - storage/pvc.yaml
 
 # Image tag overrides for dev environment
 images:
