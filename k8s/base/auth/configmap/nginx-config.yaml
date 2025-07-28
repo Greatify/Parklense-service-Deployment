@@ -212,22 +212,6 @@ data:
             add_header Cache-Control "public, immutable";
             add_header X-Content-Type-Options "nosniff";
             
-            # Handle common image formats with proper MIME types
-            location ~* \.(jpg|jpeg|png|gif|ico|svg|webp)$ {
-                expires 1y;
-                add_header Cache-Control "public, immutable";
-                add_header X-Content-Type-Options "nosniff";
-                try_files $uri =404;
-            }
-            
-            # Handle other media files
-            location ~* \.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|zip|rar)$ {
-                expires 1d;
-                add_header Cache-Control "public";
-                add_header X-Content-Type-Options "nosniff";
-                try_files $uri =404;
-            }
-            
             # Default media handling
             try_files $uri $uri/ =404;
         }

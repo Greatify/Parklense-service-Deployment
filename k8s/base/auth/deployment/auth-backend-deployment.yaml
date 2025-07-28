@@ -4,6 +4,8 @@ metadata:
   name: parklense-auth-backend
   labels:
     app: parklense-auth-backend
+    app.kubernetes.io/name: parklense-auth
+    app.kubernetes.io/part-of: parklense-platform
     component: backend
 spec:
   replicas: 2
@@ -15,11 +17,15 @@ spec:
   selector:
     matchLabels:
       app: parklense-auth-backend
+      app.kubernetes.io/name: parklense-auth
+      app.kubernetes.io/part-of: parklense-platform
       component: backend
   template:
     metadata:
       labels:
         app: parklense-auth-backend
+        app.kubernetes.io/name: parklense-auth
+        app.kubernetes.io/part-of: parklense-platform
         component: backend
     spec:
       serviceAccountName: parklense-auth-secret-sa
