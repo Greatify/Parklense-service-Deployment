@@ -48,7 +48,7 @@ data:
   
   # MSG91 Configuration
   MSG91_AUTH_KEY: "385249AVy4jopS686fae3dP1"
-  MSG91_TEMPLATE_ID: "641bef6ed6fc051c045a0812"
+  MSG91_TEMPLATE_ID: "641c2420d6fc0514e548ed95"
   MSG91_SENDER_ID: "GIGADK"
   
   # Sentry Configuration
