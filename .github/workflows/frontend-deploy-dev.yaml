@@ -43,7 +43,7 @@ jobs:
       - name: Update frontend image tags
         run: |
           # Update the image tag in the deployment patch
-          sed -i 's|image: "[^"]*"|image: "'"$FRONTEND_IMAGE"'"|' k8s/frontend/overlays/dev/kustomization.yaml
+          sed -i 's|image: .*|image: '"$FRONTEND_IMAGE"'|' k8s/frontend/overlays/dev/kustomization.yaml
 
       - name: Commit and push changes
         run: |
