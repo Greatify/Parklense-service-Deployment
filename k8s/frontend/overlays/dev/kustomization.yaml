@@ -164,19 +164,6 @@ patches:
               add_header Referrer-Policy "strict-origin-when-cross-origin" always;
               add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.parklensedev.com https://vehicle.parklensedev.com; frame-ancestors 'self';" always;
               
-              # Rate limiting
-              limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
-              limit_conn_zone $binary_remote_addr zone=conn_limit_per_ip:10m;
-              
-              # Upstream for backend services
-              upstream auth_backend {
-                  server parklense-auth-backend-service:80;
-              }
-              
-              upstream vehicle_backend {
-                  server parklense-vehicle-backend-service:80;
-              }
-              
               server {
                   listen 80;
                   server_name parklensedev.com;
@@ -188,63 +175,6 @@ patches:
                       access_log off;
                       return 200 "healthy\n";
                       add_header Content-Type text/plain;
-                  }
-                  
-                  # API routes - proxy to backend services
-                  location /api/auth/ {
-                      limit_req zone=api burst=20 nodelay;
-                      limit_conn conn_limit_per_ip 10;
-                      
-                      proxy_pass http://auth_backend;
-                      proxy_set_header Host $host;
-                      proxy_set_header X-Real-IP $remote_addr;
-                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $scheme;
-                      
-                      # CORS headers
-                      add_header Access-Control-Allow-Origin "https://parklensedev.com" always;
-                      add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
-                      add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization" always;
-                      add_header Access-Control-Expose-Headers "Content-Length,Content-Range" always;
-                      
-                      # Handle preflight requests
-                      if ($request_method = 'OPTIONS') {
-                          add_header Access-Control-Allow-Origin "https://parklensedev.com";
-                          add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
-                          add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
-                          add_header Access-Control-Max-Age 1728000;
-                          add_header Content-Type 'text/plain; charset=utf-8';
-                          add_header Content-Length 0;
-                          return 204;
-                      }
-                  }
-                  
-                  location /api/vehicle/ {
-                      limit_req zone=api burst=20 nodelay;
-                      limit_conn conn_limit_per_ip 10;
-                      
-                      proxy_pass http://vehicle_backend;
-                      proxy_set_header Host $host;
-                      proxy_set_header X-Real-IP $remote_addr;
-                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $scheme;
-                      
-                      # CORS headers
-                      add_header Access-Control-Allow-Origin "https://parklensedev.com" always;
-                      add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
-                      add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization" always;
-                      add_header Access-Control-Expose-Headers "Content-Length,Content-Range" always;
-                      
-                      # Handle preflight requests
-                      if ($request_method = 'OPTIONS') {
-                          add_header Access-Control-Allow-Origin "https://parklensedev.com";
-                          add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
-                          add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
-                          add_header Access-Control-Max-Age 1728000;
-                          add_header Content-Type 'text/plain; charset=utf-8';
-                          add_header Content-Length 0;
-                          return 204;
-                      }
                   }
                   
                   # Static files with caching
