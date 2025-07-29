@@ -42,7 +42,8 @@ jobs:
 
       - name: Update frontend image tags
         run: |
-          yq -i '.spec.template.spec.containers[0].image = env(FRONTEND_IMAGE)' k8s/frontend/overlays/dev/kustomization.yaml
+          # Update the image tag in the deployment patch
+          sed -i 's|image: "[^"]*"|image: "'"$FRONTEND_IMAGE"'"|' k8s/frontend/overlays/dev/kustomization.yaml
 
       - name: Commit and push changes
         run: |
