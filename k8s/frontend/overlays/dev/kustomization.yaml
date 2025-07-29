@@ -45,4 +45,4 @@ spec:
   template:
     spec:
       containers:
-        - image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:Update_GitHub_Actions_workflow-20250729-073111-23e6f91
+        - image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:Create__env_to_check_build-20250729-091217-aba9c18
