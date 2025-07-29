@@ -1,0 +1,219 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-nginx-config
+data:
+  nginx.conf: |
+    worker_processes auto;
+
+    events {
+        worker_connections 10000;
+        multi_accept on;
+        use epoll;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        server_tokens off;
+
+        log_format security '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for" '
+                          '$request_time $upstream_response_time '
+                          '$http_x_real_ip $http_x_forwarded_proto';
+
+        access_log /var/log/nginx/access.log security;
+        error_log /var/log/nginx/error.log warn;
+
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+
+        client_body_timeout 10s;
+        client_header_timeout 10s;
+        send_timeout 10s;
+
+        client_body_buffer_size 128k;
+        client_header_buffer_size 1k;
+        client_max_body_size 10m;
+        large_client_header_buffers 4 4k;
+
+        limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+        limit_conn_zone $binary_remote_addr zone=addr:10m;
+        limit_conn addr 100;
+
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), fullscreen=(self)" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+        add_header X-Permitted-Cross-Domain-Policies "none" always;
+        add_header X-Download-Options "noopen" always;
+        add_header X-DNS-Prefetch-Control "off" always;
+        add_header X-Powered-By "" always;
+        add_header Server "" always;
+        add_header X-Runtime "" always;
+        add_header X-Version "" always;
+        add_header X-Application-Version "" always;
+
+        add_header Cache-Control "no-store, no-cache, must-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires 0 always;
+
+        add_header Content-Security-Policy "
+            default-src 'self';
+            script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.posthog.com https://*.i.posthog.com;
+            style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com;
+            font-src 'self' https://fonts.gstatic.com data: https://*.parklensedev.com https://parklensedev.com;
+            img-src 'self' data: https://cdn.jsdelivr.net https://*.s3.amazonaws.com https://*.amazonaws.com https://*.parklensedev.com;
+            object-src 'none';
+            connect-src 'self' https://parklensedev.com https://*.parklensedev.com https://*.posthog.com https://*.i.posthog.com data:;
+            frame-src 'self' https://accounts.google.com;
+            worker-src 'self' blob: data:;
+            frame-ancestors 'self';
+        " always;
+
+        gzip on;
+        gzip_comp_level 6;
+        gzip_min_length 1000;
+        gzip_proxied any;
+        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml;
+        gzip_vary on;
+
+        server {
+            listen 80;
+            http2 on;
+            server_name localhost;
+
+            server_tokens off;
+
+            root /usr/share/nginx/html;
+            index index.html;
+
+            add_header X-Frame-Options "SAMEORIGIN" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            add_header X-XSS-Protection "1; mode=block" always;
+            add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+            add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), fullscreen=(self)" always;
+            add_header X-Powered-By "" always;
+            add_header Server "" always;
+            add_header X-Runtime "" always;
+            add_header X-Version "" always;
+            add_header X-Application-Version "" always;
+
+            add_header Cache-Control "no-store, no-cache, must-revalidate" always;
+            add_header Pragma "no-cache" always;
+            add_header Expires 0 always;
+
+            limit_req zone=one burst=10 nodelay;
+            limit_conn addr 100;
+
+            if ($request_method = TRACE) {
+                return 403;
+            }
+
+            location = /health {
+                return 200 'OK';
+                add_header Content-Type text/plain;
+                add_header X-Content-Type-Options "nosniff" always;
+                add_header X-Frame-Options "SAMEORIGIN" always;
+                add_header X-Powered-By "" always;
+                add_header Server "" always;
+            }
+
+            location / {
+                try_files $uri $uri/ /index.html;
+
+                if ($request_filename !~ "^/usr/share/nginx/html/") {
+                    return 403;
+                }
+                
+                autoindex off;
+                
+                location ~* \.(html|css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ {
+                    try_files $uri =404;
+                }
+
+                if ($request_method = 'OPTIONS') {
+                    add_header 'Access-Control-Allow-Origin' $http_origin;
+                    add_header 'Access-Control-Allow-Methods' 'GET, HEAD, PUT, POST, PATCH, OPTIONS';
+                    add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Database-Choice';
+                    add_header 'Access-Control-Allow-Credentials' 'true';
+                    add_header 'Access-Control-Expose-Headers' 'Correlation-ID';
+                    add_header 'Access-Control-Max-Age' 1728000;
+                    add_header 'Content-Type' 'text/plain; charset=utf-8';
+                    add_header 'Content-Length' 0;
+                    add_header X-Frame-Options "SAMEORIGIN" always;
+                    add_header X-Powered-By "" always;
+                    add_header Server "" always;
+                    return 204;
+                }
+
+                if ($http_origin ~ '^https?://(parklensedev\.com|.*\.parklensedev\.com)$') {
+                    add_header 'Access-Control-Allow-Origin' $http_origin always;
+                }
+
+                add_header 'Access-Control-Allow-Methods' 'GET, HEAD, PUT, POST, PATCH, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Database-Choice' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Expose-Headers' 'Correlation-ID' always;
+                add_header X-Frame-Options "SAMEORIGIN" always;
+                add_header X-Powered-By "" always;
+                add_header Server "" always;
+
+                proxy_cookie_path / "/; HttpOnly; Secure; SameSite=Strict";
+                proxy_cookie_path /api/ "/; HttpOnly; Secure; SameSite=Strict";
+            }
+
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+                expires 30d;
+                add_header Cache-Control "public, max-age=2592000" always;
+                add_header X-Content-Type-Options "nosniff" always;
+                add_header X-Frame-Options "SAMEORIGIN" always;
+                add_header X-Powered-By "" always;
+                add_header Server "" always;
+            }
+
+            location ~ /\.(?!well-known).* {
+                deny all;
+                access_log off;
+                log_not_found off;
+            }
+
+            location ~* \.(php|js|ts|jsx|tsx|map|log|git|env|DS_Store|swp|bak|old|zip|config|json|md|txt|sql|yml|yaml|xml|ini|conf|sh|bash|exe|dll|so|dylib|class|jar|war|ear|zip|tar|gz|rar|7z)$ {
+                deny all;
+                access_log off;
+                log_not_found off;
+            }
+
+            location ~* /(node_modules|\.git|\.svn|\.hg|\.idea|\.vscode|\.env|config|src|tests|coverage|dist|build|logs|temp|tmp|cache)/ {
+                deny all;
+                access_log off;
+                log_not_found off;
+            }
+
+            error_page 404 /404.html;
+            error_page 500 502 503 504 /50x.html;
+            location = /404.html {
+                internal;
+                root /usr/share/nginx/html;
+                add_header X-Content-Type-Options "nosniff" always;
+                add_header X-Frame-Options "SAMEORIGIN" always;
+                add_header X-Powered-By "" always;
+                add_header Server "" always;
+            }
+            location = /50x.html {
+                internal;
+                root /usr/share/nginx/html;
+                add_header X-Content-Type-Options "nosniff" always;
+                add_header X-Frame-Options "SAMEORIGIN" always;
+                add_header X-Powered-By "" always;
+                add_header Server "" always;
+            }
+        }
+    } 

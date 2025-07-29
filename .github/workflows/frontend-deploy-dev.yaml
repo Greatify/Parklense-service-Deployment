@@ -1,0 +1,116 @@
+name: Frontend - Deploy to Development
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: 'Frontend Docker image to deploy'
+        required: true
+      sha:
+        description: 'Git SHA of the commit'
+        required: true
+      commit_message:
+        description: 'Original commit message'
+        required: true
+
+jobs:
+  deploy-frontend-dev:
+    runs-on: ubuntu-latest
+    environment: 
+      name: development
+      url: https://parklensedev.com  # Updated URL
+    
+    steps:
+      - name: Display Deployment Information
+        run: |
+          echo "Frontend Image: ${{ github.event.inputs.image }}"
+          echo "SHA: ${{ github.event.inputs.sha }}"
+          echo "Commit Message: ${{ github.event.inputs.commit_message }}"
+
+      - name: Checkout deployment repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set environment variables
+        run: |
+          echo "FRONTEND_IMAGE=${{ github.event.inputs.image }}" >> $GITHUB_ENV
+          echo "COMMIT_SHA=${{ github.event.inputs.sha }}" >> $GITHUB_ENV
+          echo "COMMIT_MESSAGE=${{ github.event.inputs.commit_message }}" >> $GITHUB_ENV
+          echo "DEPLOY_ACTOR=${{ github.actor }}" >> $GITHUB_ENV
+
+      - name: Update frontend image tags
+        run: |
+          yq -i '.spec.template.spec.containers[0].image = env(FRONTEND_IMAGE)' k8s/frontend/overlays/dev/kustomization.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "deployment@parklens.com"
+          git config --local user.name "Parklens Frontend Deployment Bot"
+          
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add k8s/frontend/overlays/dev/
+            git commit -m "🚀 Frontend Deploy to dev: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
+            git push origin main
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Update Kubernetes configuration
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+
+      - name: Deploy frontend to development environment
+        run: |
+          kubectl apply -k k8s/frontend/overlays/dev
+
+      - name: Send deployment success notification
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          channel: parklens-deployment-alerts
+          text: |
+            :rocket: *Frontend Deployment to Development Successful*
+            
+            *Environment:* Development
+            *Service:* Frontend
+            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
+            *Commit:* ${{ env.COMMIT_SHA }}
+            *Message:* ${{ env.COMMIT_MESSAGE }}
+            *Image:* `${{ env.FRONTEND_IMAGE }}`
+            *URL:* https://parklensedev.com
+            
+            The frontend deployment has been completed successfully.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send deployment failure notification
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          channel: parklens-deployment-alerts
+          text: |
+            :x: *Frontend Deployment to Development Failed*
+            
+            *Environment:* Development
+            *Service:* Frontend
+            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
+            *Commit:* ${{ env.COMMIT_SHA }}
+            *Message:* ${{ env.COMMIT_MESSAGE }}
+            *Image:* `${{ env.FRONTEND_IMAGE }}`
+            
+            Please check the logs for more details.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

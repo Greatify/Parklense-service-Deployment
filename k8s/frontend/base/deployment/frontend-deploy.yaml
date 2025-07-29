@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parklens-frontend
+  labels:
+    app: parklens-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parklens-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: parklens-frontend
+    spec:
+      volumes:
+        - name: nginx-configuration
+          configMap:
+            name: frontend-nginx-config
+      containers:
+        - name: parklens-frontend
+          image: &quot;placeholder.ecr.repository/parklens-frontend:latest&quot;  # Replace with actual image
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: &quot;500m&quot;
+              memory: &quot;500Mi&quot;
+            limits:
+              cpu: &quot;1&quot;
+              memory: &quot;1Gi&quot;
+          ports:
+            - containerPort: 80
+          volumeMounts:  
+            - name: nginx-configuration
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf 

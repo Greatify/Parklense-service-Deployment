@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: stg-parklens
+resources:
+  - ../../base
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklens-frontend
+        labels:
+          app: parklens-frontend
+      spec:
+        replicas: 2
+        selector:
+          matchLabels:
+            app: parklens-frontend
+        template:
+          metadata:
+            labels:
+              app: parklens-frontend
+          spec:
+            containers:
+              - name: parklens-frontend
+                image: "parklens-frontend:stg"
+                imagePullPolicy: Always
+                resources:
+                  requests:
+                    cpu: "500m"
+                    memory: "500Mi"
+                  limits:
+                    cpu: "1"
+                    memory: "1Gi"
+                ports:
+                  - containerPort: 80
+    target:
+      kind: Deployment
+      name: parklens-frontend 
