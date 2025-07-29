@@ -25,18 +25,41 @@ spec:
             name: frontend-nginx-config
       containers:
         - name: parklens-frontend
-          image: &quot;placeholder.ecr.repository/parklens-frontend:latest&quot;  # Replace with actual image
+          image: "placeholder.ecr.repository/parklens-frontend:latest"  # Replace with actual image
           imagePullPolicy: Always
           resources:
             requests:
-              cpu: &quot;500m&quot;
-              memory: &quot;500Mi&quot;
+              cpu: "500m"
+              memory: "500Mi"
             limits:
-              cpu: &quot;1&quot;
-              memory: &quot;1Gi&quot;
+              cpu: "1"
+              memory: "1Gi"
           ports:
             - containerPort: 80
           volumeMounts:  
             - name: nginx-configuration
               mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf 
+              subPath: nginx.conf
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 80
+            failureThreshold: 30
+            periodSeconds: 10
+            timeoutSeconds: 5 
