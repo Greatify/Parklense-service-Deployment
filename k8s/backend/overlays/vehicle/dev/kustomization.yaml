@@ -7,11 +7,6 @@ resources:
   # - storage/pv.yaml
   # - storage/pvc.yaml
 
-# Image tag overrides for dev environment
-images:
-  - name: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service
-    newTag: latest
-
 # Environment-specific labels
 labels:
   - pairs:
@@ -34,6 +29,7 @@ patches:
             serviceAccountName: parklense-vehicle-secret-sa
             containers:
             - name: vehicle-backend
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:latest
               resources:
                 requests:
                   cpu: "0.25"

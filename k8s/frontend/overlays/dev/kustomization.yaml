@@ -5,11 +5,6 @@ namespace: dev-parklense
 resources:
   - ../../base
 
-# Image tag overrides for dev environment
-images:
-  - name: parklens-frontend
-    newTag: dev
-
 # Environment-specific labels
 labels:
   - pairs:

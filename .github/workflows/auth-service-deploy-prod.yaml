@@ -67,14 +67,13 @@ jobs:
       - name: Backup current deployment
         run: |
           mkdir -p backup
-          cp -r k8s/base/deployment/ backup/
+          cp -r k8s/backend/base/auth/deployment/ backup/
           echo "Current deployment backed up"
 
       - name: Update deployment image tags
         run: |
-          yq -i '.spec.template.spec.containers[0].image = env(BACKEND_IMAGE)' k8s/base/deployment/auth-backend-deployment.yaml
-          yq -i '.spec.template.spec.containers[0].image = env(BACKEND_IMAGE)' k8s/base/deployment/celery-worker-deployment.yaml
-          yq -i '.spec.template.spec.containers[0].image = env(BACKEND_IMAGE)' k8s/base/deployment/celery-beat-deployment.yaml
+          # Update auth service image tags in overlay files
+          sed -i 's|image: .*|image: '"$BACKEND_IMAGE"'|' k8s/backend/overlays/auth/prod/kustomization.yaml
 
       - name: Commit and push changes
         run: |
@@ -84,7 +83,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit"
           else
-            git add k8s/base/deployment/
+            git add k8s/backend/overlays/auth/prod/
             git commit -m "🚀 Deploy to production: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
             git push origin main
           fi

@@ -42,10 +42,8 @@ jobs:
 
       - name: Update auth service image tags
         run: |
-          # Update auth service image tags only
-          yq -i '.spec.template.spec.containers[0].image = env(AUTH_IMAGE)' k8s/base/auth/deployment/auth-backend-deployment.yaml
-          yq -i '.spec.template.spec.containers[0].image = env(AUTH_IMAGE)' k8s/base/auth/deployment/celery-worker-deployment.yaml
-          yq -i '.spec.template.spec.containers[0].image = env(AUTH_IMAGE)' k8s/base/auth/deployment/celery-beat-deployment.yaml
+          # Update auth service image tags in overlay files
+          sed -i 's|image: .*|image: '"$AUTH_IMAGE"'|' k8s/backend/overlays/auth/dev/kustomization.yaml
 
       - name: Commit and push changes
         run: |
@@ -55,7 +53,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit"
           else
-            git add k8s/base/auth/deployment/
+            git add k8s/backend/overlays/auth/dev/
             git commit -m "🚀 Auth Service Deploy to dev: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
             git push origin main
           fi

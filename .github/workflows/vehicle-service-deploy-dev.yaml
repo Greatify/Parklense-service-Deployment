@@ -42,8 +42,8 @@ jobs:
 
       - name: Update vehicle service image tags
         run: |
-          # Update vehicle service image tags only
-          yq -i '.spec.template.spec.containers[0].image = env(VEHICLE_IMAGE)' k8s/base/vehicle/deployment/vehicle-backend-deployment.yaml
+          # Update vehicle service image tags in overlay files
+          sed -i 's|image: .*|image: '"$VEHICLE_IMAGE"'|' k8s/backend/overlays/vehicle/dev/kustomization.yaml
 
       - name: Commit and push changes
         run: |
@@ -53,7 +53,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit"
           else
-            git add k8s/base/vehicle/deployment/
+            git add k8s/backend/overlays/vehicle/dev/
             git commit -m "🚀 Vehicle Service Deploy to dev: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
             git push origin main
           fi
