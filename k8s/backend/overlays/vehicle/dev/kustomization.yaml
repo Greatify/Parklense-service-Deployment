@@ -29,7 +29,7 @@ patches:
             serviceAccountName: parklense-vehicle-secret-sa
             containers:
             - name: vehicle-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:latest
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:Merge_pull_request__1_from_Gre-20250730-092701-3ca209f
               resources:
                 requests:
                   cpu: "0.25"
