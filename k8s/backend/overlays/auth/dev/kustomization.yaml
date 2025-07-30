@@ -29,7 +29,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_build_deploy_yaml-20250730-124741-089424b
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Error_handled_on_user_access__-20250730-130827-fe0f56e
               resources:
                 requests:
                   cpu: "0.5"
@@ -57,7 +57,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_build_deploy_yaml-20250730-124741-089424b
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Error_handled_on_user_access__-20250730-130827-fe0f56e
               resources:
                 requests:
                   cpu: "0.25"
@@ -94,7 +94,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_build_deploy_yaml-20250730-124741-089424b
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Error_handled_on_user_access__-20250730-130827-fe0f56e
               resources:
                 requests:
                   cpu: "0.1"
