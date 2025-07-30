@@ -29,7 +29,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Revert_resolved_asgi_attribute-20250730-112729-c060c39
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Revert_resolved_asgi_attribute-20250730-120833-c060c39
               resources:
                 requests:
                   cpu: "0.5"
@@ -57,7 +57,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Revert_resolved_asgi_attribute-20250730-112729-c060c39
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Revert_resolved_asgi_attribute-20250730-120833-c060c39
               resources:
                 requests:
                   cpu: "0.25"
@@ -94,7 +94,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Revert_resolved_asgi_attribute-20250730-112729-c060c39
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Revert_resolved_asgi_attribute-20250730-120833-c060c39
               resources:
                 requests:
                   cpu: "0.1"
