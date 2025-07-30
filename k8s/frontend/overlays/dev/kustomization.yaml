@@ -32,7 +32,7 @@ patches:
           spec:
             containers:
             - name: parklens-frontend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:updated_barcode-20250730-164231-5330dbe
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:Refactor_dependency_installati-20250730-184323-7a21625
               imagePullPolicy: Always
               ports:
               - containerPort: 80
