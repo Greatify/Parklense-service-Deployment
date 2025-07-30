@@ -29,7 +29,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-backend:latest
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_repo_name_in_github_act-20250730-092612-5618ee1
               resources:
                 requests:
                   cpu: "0.5"
@@ -57,7 +57,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-backend:latest
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_repo_name_in_github_act-20250730-092612-5618ee1
               resources:
                 requests:
                   cpu: "0.25"
@@ -94,7 +94,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-backend:latest
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_repo_name_in_github_act-20250730-092612-5618ee1
               resources:
                 requests:
                   cpu: "0.1"
