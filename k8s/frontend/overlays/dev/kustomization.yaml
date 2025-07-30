@@ -32,7 +32,7 @@ patches:
           spec:
             containers:
             - name: parklens-frontend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:changed_barcodescanner_functio-20250730-193659-c439c10
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:updated_qr_scanner_for_multi_p-20250730-220142-c6ce2fe
               imagePullPolicy: Always
               ports:
               - containerPort: 80
