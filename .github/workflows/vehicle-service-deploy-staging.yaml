@@ -82,21 +82,14 @@ jobs:
 
       - name: Deploy to staging environment
         run: |
-          kubectl apply -k k8s/overlays/staging
-          kubectl rollout status deployment/parklense-auth-backend -n staging-parklense-auth --timeout=300s
-          kubectl rollout status deployment/parklense-auth-celery-worker -n staging-parklense-auth --timeout=300s
-          kubectl rollout status deployment/parklense-auth-celery-beat -n staging-parklense-auth --timeout=300s
-          
-          # Deploy vehicle service if image is provided
-          if [ -n "${{ github.event.inputs.vehicle_image }}" ]; then
-            kubectl rollout status deployment/parklense-vehicle-backend -n staging-parklense-auth --timeout=300s
-          fi
+          kubectl apply -k k8s/backend/overlays/vehicle/staging
+          kubectl rollout status deployment/parklense-vehicle-backend -n staging-parklense-vehicle --timeout=300s
 
       - name: Verify deployment
         run: |
-          kubectl get pods -n staging-parklense-auth
-          kubectl get services -n staging-parklense-auth
-          kubectl get ingress -n staging-parklense-auth
+          kubectl get pods -n staging-parklense-vehicle
+          kubectl get services -n staging-parklense-vehicle
+          kubectl get ingress -n staging-parklense-vehicle
 
       - name: Run health checks
         run: |
@@ -104,7 +97,7 @@ jobs:
           sleep 30
           
           # Get the load balancer URL
-          LB_URL=$(kubectl get ingress parklense-auth-ingress -n staging-parklense-auth -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          LB_URL=$(kubectl get ingress parklense-vehicle-ingress -n staging-parklense-vehicle -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           
           if [ -n "$LB_URL" ]; then
             echo "Testing health endpoint: https://$LB_URL/api/health/"
@@ -128,16 +121,17 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rocket: *Deployment to Staging Successful*
+            :rocket: *Vehicle Service Deployment to Staging Successful*
             
             *Environment:* Staging
+            *Service:* Vehicle Service
             *Deployed by:* ${{ env.DEPLOY_ACTOR }}
             *Commit:* ${{ env.COMMIT_SHA }}
             *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.BACKEND_IMAGE }}`
-            *URL:* https://staging-auth.parklense.com
+            *Image:* `${{ env.VEHICLE_IMAGE }}`
+            *URL:* https://staging-vehicle.parklense.com
             
-            The deployment has been completed successfully. Ready for QA testing.
+            The vehicle service deployment has been completed successfully. Ready for QA testing.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -149,13 +143,14 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :x: *Deployment to Staging Failed*
+            :x: *Vehicle Service Deployment to Staging Failed*
             
             *Environment:* Staging
+            *Service:* Vehicle Service
             *Deployed by:* ${{ env.DEPLOY_ACTOR }}
             *Commit:* ${{ env.COMMIT_SHA }}
             *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.BACKEND_IMAGE }}`
+            *Image:* `${{ env.VEHICLE_IMAGE }}`
             
             Please check the logs for more details.
         env:
@@ -178,7 +173,7 @@ jobs:
               state: status,
               description: description,
               environment: 'staging',
-              environment_url: 'https://staging-auth.parklense.com'
+              environment_url: 'https://staging-vehicle.parklense.com'
             });
 
       - name: Create pull request for production

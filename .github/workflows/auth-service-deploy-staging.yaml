@@ -90,7 +90,7 @@ jobs:
 
       - name: Deploy to staging environment
         run: |
-          kubectl apply -k k8s/overlays/staging
+          kubectl apply -k k8s/backend/overlays/auth/staging
           kubectl rollout status deployment/parklense-auth-backend -n staging-parklense-auth --timeout=300s
           kubectl rollout status deployment/parklense-auth-celery-worker -n staging-parklense-auth --timeout=300s
           kubectl rollout status deployment/parklense-auth-celery-beat -n staging-parklense-auth --timeout=300s

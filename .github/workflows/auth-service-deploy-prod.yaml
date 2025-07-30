@@ -121,7 +121,7 @@ jobs:
       - name: Deploy to production environment
         run: |
           echo "🚀 Starting production deployment..."
-          kubectl apply -k k8s/overlays/prod
+          kubectl apply -k k8s/backend/overlays/auth/prod
           
           echo "⏳ Waiting for deployments to complete..."
           kubectl rollout status deployment/parklense-auth-backend -n prod-parklense-auth --timeout=600s

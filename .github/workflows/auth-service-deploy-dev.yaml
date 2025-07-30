@@ -71,7 +71,7 @@ jobs:
 
       - name: Deploy auth service to development environment
         run: |
-          kubectl apply -k k8s/overlays/auth/dev
+          kubectl apply -k k8s/backend/overlays/auth/dev
           kubectl rollout status deployment/parklense-auth-backend -n dev-parklense --timeout=300s
           kubectl rollout status deployment/parklense-auth-celery-worker -n dev-parklense --timeout=300s
           kubectl rollout status deployment/parklense-auth-celery-beat -n dev-parklense --timeout=300s

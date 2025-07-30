@@ -121,12 +121,10 @@ jobs:
       - name: Deploy to production environment
         run: |
           echo "🚀 Starting production deployment..."
-          kubectl apply -k k8s/overlays/prod
+          kubectl apply -k k8s/backend/overlays/vehicle/prod
           
           echo "⏳ Waiting for deployments to complete..."
-          kubectl rollout status deployment/parklense-auth-backend -n prod-parklense-auth --timeout=600s
-          kubectl rollout status deployment/parklense-auth-celery-worker -n prod-parklense-auth --timeout=600s
-          kubectl rollout status deployment/parklense-auth-celery-beat -n prod-parklense-auth --timeout=600s
+          kubectl rollout status deployment/parklense-vehicle-backend -n prod-parklense-vehicle --timeout=600s
 
       - name: Run comprehensive health checks
         run: |
@@ -134,7 +132,7 @@ jobs:
           sleep 60  # Give more time for production
           
           # Get the load balancer URL
-          LB_URL=$(kubectl get ingress parklense-auth-ingress -n prod-parklense-auth -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          LB_URL=$(kubectl get ingress parklense-vehicle-ingress -n prod-parklense-vehicle -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           
           if [ -n "$LB_URL" ]; then
             echo "Testing health endpoint: https://$LB_URL/api/health/"
@@ -170,16 +168,17 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rocket: *PRODUCTION DEPLOYMENT SUCCESSFUL* :rocket:
+            :rocket: *VEHICLE SERVICE PRODUCTION DEPLOYMENT SUCCESSFUL* :rocket:
             
             *Environment:* Production
+            *Service:* Vehicle Service
             *Deployed by:* ${{ env.DEPLOY_ACTOR }}
             *Commit:* ${{ env.COMMIT_SHA }}
             *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.BACKEND_IMAGE }}`
-            *URL:* https://auth.parklense.com
+            *Image:* `${{ env.VEHICLE_IMAGE }}`
+            *URL:* https://vehicle.parklense.com
             
-            The production deployment has been completed successfully. 
+            The vehicle service production deployment has been completed successfully. 
             All health checks passed. 🎉
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -192,15 +191,16 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rotating_light: *PRODUCTION DEPLOYMENT FAILED* :rotating_light:
+            :rotating_light: *VEHICLE SERVICE PRODUCTION DEPLOYMENT FAILED* :rotating_light:
             
             *Environment:* Production
+            *Service:* Vehicle Service
             *Deployed by:* ${{ env.DEPLOY_ACTOR }}
             *Commit:* ${{ env.COMMIT_SHA }}
             *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.BACKEND_IMAGE }}`
+            *Image:* `${{ env.VEHICLE_IMAGE }}`
             
-            URGENT: Production deployment failed. Please investigate immediately.
+            URGENT: Vehicle service production deployment failed. Please investigate immediately.
             Rollback may be required.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -222,7 +222,7 @@ jobs:
               state: status,
               description: description,
               environment: 'production',
-              environment_url: 'https://auth.parklense.com'
+              environment_url: 'https://vehicle.parklense.com'
             });
 
       - name: Create deployment tag

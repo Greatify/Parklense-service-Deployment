@@ -71,7 +71,7 @@ jobs:
 
       - name: Deploy vehicle service to development environment
         run: |
-          kubectl apply -k k8s/overlays/vehicle/dev
+          kubectl apply -k k8s/backend/overlays/vehicle/dev
 
       # - name: Verify vehicle deployment
       #   run: |
