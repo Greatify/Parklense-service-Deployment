@@ -37,7 +37,7 @@ patches:
           spec:
             containers:
             - name: parklens-frontend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:Updated_languages-20250729-130621-3aa841e
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:Updated_with_toast_notifs-20250730-050222-58e935d
               imagePullPolicy: Always
               ports:
               - containerPort: 80
