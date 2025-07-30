@@ -254,18 +254,10 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          fields: repo,message,commit,eventName,ref,workflow
-          author_name: Frontend Deployment Success
-          mention: channel
-          if_mention: success
-          job_name: deploy-frontend-staging
           channel: parklens-deployment-alerts
-          username: Parklens-CICD
           text: |
-            :rocket: *Frontend deployment to staging environment succeeded*         
-            *Pusher:* `${{ github.actor }}`   
-            *Commit:* `${{ env.COMMIT_MESSAGE }}`   
-            *Image:* `${{ env.FRONTEND_IMAGE }}`
+            :rocket: *Frontend - Staging Deployed Successfully*
+            *By:* ${{ github.actor }} | *SHA:* ${{ env.COMMIT_MESSAGE }}
             *URL:* https://parklensedev.com
             The changes have been successfully deployed to the staging environment. Please verify the deployment and conduct necessary tests.
         env:
@@ -276,18 +268,10 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          fields: repo,message,commit,eventName,ref,workflow
-          author_name: Frontend Deployment Failure
-          mention: ${{ github.actor }}
-          if_mention: always
-          job_name: deploy-frontend-staging
           channel: parklens-deployment-alerts
-          username: Parklens-CICD
           text: |
-            ❌ *Frontend deployment to staging failed*         
-            *Pusher:* `${{ github.actor }}`   
-            *Commit:* `${{ env.COMMIT_MESSAGE }}`   
-            *Image:* `${{ env.FRONTEND_IMAGE }}`
-            Please check the logs for more details.
+            :x: *Frontend - Staging Deployment Failed*
+            *By:* ${{ github.actor }} | *SHA:* ${{ env.COMMIT_MESSAGE }}
+            Check logs for details.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

@@ -78,20 +78,11 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rocket: *Frontend Deployment to Development Successful*
-            
-            *Environment:* Development
-            *Service:* Frontend
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.FRONTEND_IMAGE }}`
+            :rocket: *Frontend - Dev Deployed Successfully*
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
             *URL:* https://parklensedev.com
-            
-            The frontend deployment has been completed successfully.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -100,18 +91,10 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :x: *Frontend Deployment to Development Failed*
-            
-            *Environment:* Development
-            *Service:* Frontend
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.FRONTEND_IMAGE }}`
-            
-            Please check the logs for more details.
+            :x: *Frontend - Dev Deployment Failed*
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
+            Check logs for details.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

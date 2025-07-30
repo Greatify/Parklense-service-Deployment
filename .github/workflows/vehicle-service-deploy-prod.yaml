@@ -165,20 +165,11 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rocket: *VEHICLE SERVICE PRODUCTION DEPLOYMENT SUCCESSFUL* :rocket:
-            
-            *Environment:* Production
-            *Service:* Vehicle Service
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.VEHICLE_IMAGE }}`
+            :rocket: *Vehicle Service - PRODUCTION Deployed Successfully* :rocket:
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
             *URL:* https://vehicle.parklense.com
-            
-            The vehicle service production deployment has been completed successfully. 
             All health checks passed. 🎉
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -188,20 +179,11 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rotating_light: *VEHICLE SERVICE PRODUCTION DEPLOYMENT FAILED* :rotating_light:
-            
-            *Environment:* Production
-            *Service:* Vehicle Service
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.VEHICLE_IMAGE }}`
-            
-            URGENT: Vehicle service production deployment failed. Please investigate immediately.
-            Rollback may be required.
+            :rotating_light: *Vehicle Service - PRODUCTION Deployment Failed* :rotating_light:
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
+            URGENT: Investigate immediately. Rollback may be required.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 

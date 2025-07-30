@@ -95,20 +95,11 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rocket: *Auth Service Deployment to Development Successful*
-            
-            *Environment:* Development
-            *Service:* Auth Service
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.AUTH_IMAGE }}`
-            *URL:* https://auth.parklensedev.com
-            
-            The auth service deployment has been completed successfully.
+            :rocket: *Auth Service - Dev Deployed Successfully*
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
+            *URL:* https://api.parklensedev.com
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -117,18 +108,10 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :x: *Auth Service Deployment to Development Failed*
-            
-            *Environment:* Development
-            *Service:* Auth Service
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.AUTH_IMAGE }}`
-            
-            Please check the logs for more details.
+            :x: *Auth Service - Dev Deployment Failed*
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
+            Check logs for details.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 

@@ -118,20 +118,12 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :rocket: *Vehicle Service Deployment to Staging Successful*
-            
-            *Environment:* Staging
-            *Service:* Vehicle Service
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.VEHICLE_IMAGE }}`
+            :rocket: *Vehicle Service - Staging Deployed Successfully*
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
             *URL:* https://staging-vehicle.parklense.com
-            
-            The vehicle service deployment has been completed successfully. Ready for QA testing.
+            Ready for QA testing.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -140,19 +132,11 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          fields: repo,message,commit,author,action,eventName,ref,workflow
           channel: parklens-deployment-alerts
           text: |
-            :x: *Vehicle Service Deployment to Staging Failed*
-            
-            *Environment:* Staging
-            *Service:* Vehicle Service
-            *Deployed by:* ${{ env.DEPLOY_ACTOR }}
-            *Commit:* ${{ env.COMMIT_SHA }}
-            *Message:* ${{ env.COMMIT_MESSAGE }}
-            *Image:* `${{ env.VEHICLE_IMAGE }}`
-            
-            Please check the logs for more details.
+            :x: *Vehicle Service - Staging Deployment Failed*
+            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
+            Check logs for details.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
