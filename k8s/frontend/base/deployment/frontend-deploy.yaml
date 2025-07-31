@@ -40,26 +40,26 @@ spec:
             - name: nginx-configuration
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 80
-            failureThreshold: 30
-            periodSeconds: 10
-            timeoutSeconds: 5 
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 80
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 30
+          #   timeoutSeconds: 10
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 80
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          #   failureThreshold: 3
+          # startupProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 80
+          #   failureThreshold: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5 
