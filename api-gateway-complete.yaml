@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: Parklense API Gateway
-  description: Combined API Gateway for Auth and Vehicle services
+  title: Parklense Backend Service - Dev
+  description: API Gateway for Parklense Auth and Vehicle services (Development Environment)
   version: 1.0.0
   contact:
     name: Parklense Team
@@ -9,255 +9,357 @@ info:
 
 servers:
   - url: https://api.parklensedev.com
-    description: Production API Gateway
+    description: Development API Gateway
 
+# Global security schemes
+components:
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+# Request/Response models for better validation
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+        message:
+          type: string
+        request_id:
+          type: string
+
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "healthy"
+        service:
+          type: string
+        version:
+          type: string
+        timestamp:
+          type: string
+
+# Global request parameters
+  parameters:
+    RequestId:
+      name: X-Request-ID
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Correlation ID for request tracking
+
+# Path definitions
 paths:
-  # Health Check - Routes to Auth Service
+  # Global health check
   /health:
     get:
       summary: Global health check
-      description: Health check endpoint routed to auth service
+      description: Health check endpoint that aggregates status from both services
+      operationId: globalHealthCheck
+      tags: [Health]
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Services are healthy
+          headers:
+            X-Response-Time:
+              schema:
+                type: string
+            X-Request-ID:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
+        '503':
+          description: One or more services are unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: GET
         uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/health/
         requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
+          integration.request.header.Host: "'api.parklensedev.com'"
+          integration.request.header.X-Forwarded-For: "context.identity.sourceIp"
         responses:
           default:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin: "'*'"
               method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
 
-  # Auth Service Routes
+  # Authentication service routes
   /auth/{proxy+}:
     x-amazon-apigateway-any-method:
-      summary: Auth service endpoints
-      description: All authentication and profile endpoints
+      summary: Authentication service endpoints
+      description: All authentication, registration, and OTP endpoints
+      operationId: authServiceProxy
+      tags: [Authentication]
+      security:
+        - {} # Some auth endpoints are public (login, register)
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '429':
+          description: Too many requests
+        '500':
+          description: Internal server error
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: ANY
         uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/auth/{proxy}
         requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/auth/{proxy}"
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.Host: "'api.parklensedev.com'"
+          integration.request.header.X-Forwarded-For: "context.identity.sourceIp"
         responses:
           default:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin: "'*'"
               method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
 
-  # Profile Service Routes
+  # Profile service routes
   /profile/{proxy+}:
     x-amazon-apigateway-any-method:
-      summary: Profile service endpoints
-      description: User profile management endpoints
+      summary: Profile management endpoints
+      description: User profile management and avatar upload
+      operationId: profileServiceProxy
+      tags: [Profile]
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized - JWT token required
+        '403':
+          description: Forbidden - Invalid or expired token
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: ANY
         uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/profile/{proxy}
         requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/profile/{proxy}"
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.Host: "'api.parklensedev.com'"
+          integration.request.header.X-Forwarded-For: "context.identity.sourceIp"
         responses:
           default:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin: "'*'"
               method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
 
-  # Vehicle Service Routes
+  # Vehicle service routes
   /vehicle/{proxy+}:
     x-amazon-apigateway-any-method:
-      summary: Vehicle service endpoints
-      description: All vehicle management endpoints
+      summary: Vehicle management endpoints
+      description: All vehicle CRUD operations, image uploads, and validation
+      operationId: vehicleServiceProxy
+      tags: [Vehicle]
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized - JWT token required
+        '403':
+          description: Forbidden - Invalid or expired token
+        '404':
+          description: Vehicle not found
+        '409':
+          description: Vehicle already exists
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: ANY
         uri: http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/{proxy}
         requestParameters:
-          overwrite:header.Host: "vehicle.parklensedev.com"
-          overwrite:path: "/{proxy}"
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.Host: "'vehicle.parklensedev.com'"
+          integration.request.header.X-Forwarded-For: "context.identity.sourceIp"
         responses:
           default:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin: "'*'"
               method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
 
-  # API v1 Routes (Backward Compatibility)
-  /api/v1/auth/{proxy+}:
-    x-amazon-apigateway-any-method:
-      summary: API v1 auth endpoints
-      description: Legacy API v1 authentication endpoints
-      x-amazon-apigateway-integration:
-        type: http_proxy
-        httpMethod: ANY
-        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/auth/{proxy}
-        requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/api/v1/auth/{proxy}"
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
-
-  /api/v1/profile/{proxy+}:
-    x-amazon-apigateway-any-method:
-      summary: API v1 profile endpoints
-      description: Legacy API v1 profile endpoints
-      x-amazon-apigateway-integration:
-        type: http_proxy
-        httpMethod: ANY
-        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/profile/{proxy}
-        requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/api/v1/profile/{proxy}"
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
-
-  /api/v1/vehicle/{proxy+}:
-    x-amazon-apigateway-any-method:
-      summary: API v1 vehicle endpoints
-      description: Legacy API v1 vehicle endpoints
-      x-amazon-apigateway-integration:
-        type: http_proxy
-        httpMethod: ANY
-        uri: http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/{proxy}
-        requestParameters:
-          overwrite:header.Host: "vehicle.parklensedev.com"
-          overwrite:path: "/api/v1/{proxy}"
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
-
-  # Documentation Routes
+  # API documentation endpoints
   /docs:
     get:
-      summary: API Documentation
-      description: Swagger UI documentation (Auth Service)
+      summary: API documentation
+      description: Interactive Swagger UI documentation
+      tags: [Documentation]
+      responses:
+        '200':
+          description: Documentation page
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: GET
         uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/swagger/
         requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/api/v1/swagger/"
+          integration.request.header.Host: "'api.parklensedev.com'"
         responses:
           default:
             statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-
-  /vehicle/docs:
-    get:
-      summary: Vehicle API Documentation
-      description: Swagger UI documentation (Vehicle Service)
-      x-amazon-apigateway-integration:
-        type: http_proxy
-        httpMethod: GET
-        uri: http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/docs/
-        requestParameters:
-          overwrite:header.Host: "vehicle.parklensedev.com"
-          overwrite:path: "/api/docs/"
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
 
   /schema:
     get:
-      summary: OpenAPI Schema (Auth Service)
-      description: OpenAPI schema endpoint for Auth Service
+      summary: OpenAPI schema
+      description: Raw OpenAPI 3.0 specification
+      tags: [Documentation]
+      responses:
+        '200':
+          description: OpenAPI schema in JSON format
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: GET
         uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/schema/
         requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/api/schema/"
+          integration.request.header.Host: "'api.parklensedev.com'"
         responses:
           default:
             statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
 
-  /vehicle/schema:
-    get:
-      summary: OpenAPI Schema (Vehicle Service)
-      description: OpenAPI schema endpoint for Vehicle Service
-      x-amazon-apigateway-integration:
-        type: http_proxy
-        httpMethod: GET
-        uri: http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/schema/
-        requestParameters:
-          overwrite:header.Host: "vehicle.parklensedev.com"
-          overwrite:path: "/api/schema/"
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-
-  # Static files for Swagger UI
-  /static/{proxy+}:
+  # API v1 routes for backward compatibility
+  /api/v1/auth/{proxy+}:
     x-amazon-apigateway-any-method:
-      summary: Static files
-      description: Static files for Swagger UI and other assets
+      summary: Legacy API v1 auth endpoints
+      description: Backward compatible authentication endpoints
+      deprecated: true
+      tags: [Authentication, Legacy]
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
       x-amazon-apigateway-integration:
         type: http_proxy
         httpMethod: ANY
-        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/static/{proxy}
+        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/auth/{proxy}
         requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/static/{proxy}"
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,HEAD,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
-
-  # Catch-all route (fallback to auth service)
-  /{proxy+}:
-    x-amazon-apigateway-any-method:
-      summary: Catch-all route
-      description: Fallback route to auth service
-      x-amazon-apigateway-integration:
-        type: http_proxy
-        httpMethod: ANY
-        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/{proxy}
-        requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-          overwrite:path: "/{proxy}"
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.Host: "'api.parklensedev.com'"
         responses:
           default:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin: "'*'"
               method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Requested-With'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
 
+  /api/v1/profile/{proxy+}:
+    x-amazon-apigateway-any-method:
+      summary: Legacy API v1 profile endpoints
+      description: Backward compatible profile endpoints
+      deprecated: true
+      tags: [Profile, Legacy]
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: ANY
+        uri: http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/profile/{proxy}
+        requestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.Host: "'api.parklensedev.com'"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
+
+  /api/v1/vehicle/{proxy+}:
+    x-amazon-apigateway-any-method:
+      summary: Legacy API v1 vehicle endpoints
+      description: Backward compatible vehicle endpoints
+      deprecated: true
+      tags: [Vehicle, Legacy]
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: ANY
+        uri: http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/{proxy}
+        requestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.Host: "'vehicle.parklensedev.com'"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
+
+# Global CORS handling
 x-amazon-apigateway-cors:
   allowOrigins:
     - "https://parklensedev.com"
@@ -267,34 +369,49 @@ x-amazon-apigateway-cors:
     - "http://localhost:3000"
     - "http://localhost:3001"
     - "http://localhost:8080"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:8080"
   allowMethods:
-    - "GET"
-    - "POST"
-    - "PUT"
-    - "DELETE"
-    - "PATCH"
-    - "OPTIONS"
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    - OPTIONS
   allowHeaders:
-    - "Content-Type"
-    - "Authorization"
-    - "X-Requested-With"
-    - "X-Api-Key"
-    - "X-Request-ID"
-    - "X-Correlation-ID"
-    - "X-Platform"
-    - "X-App-Version"
-    - "X-Device-ID"
+    - Content-Type
+    - Authorization
+    - X-API-Key
+    - X-Request-ID
+    - X-Platform
+    - X-App-Version
+    - X-Device-ID
   exposeHeaders:
-    - "X-Correlation-ID"
-    - "X-Response-Time"
-    - "X-API-Version"
-    - "X-Request-ID"
-  allowCredentials: true
-  maxAge: 86400
+    - X-Request-ID
+    - X-API-Version
+  maxAge: 3600
 
-x-amazon-apigateway-request-validators:
-  basic:
-    validateRequestBody: true
-    validateRequestParameters: true
-
-x-amazon-apigateway-request-validator: basic 
+# Global gateway responses for error handling
+x-amazon-apigateway-gateway-responses:
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    responseTemplates:
+      application/json: |
+        {
+          "success": false,
+          "error": "$context.error.messageString",
+          "request_id": "$context.requestId",
+          "timestamp": "$context.requestTime"
+        }
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    responseTemplates:
+      application/json: |
+        {
+          "success": false,
+          "error": "Internal server error",
+          "request_id": "$context.requestId",
+          "timestamp": "$context.requestTime"
+        }
