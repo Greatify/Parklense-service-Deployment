@@ -58,7 +58,6 @@ patches:
           alb.ingress.kubernetes.io/load-balancer-attributes: >-
             idle_timeout.timeout_seconds=60,deletion_protection.enabled=false
           alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}, {"HTTP": 80}]'
-          alb.ingress.kubernetes.io/ssl-redirect: "443"
       spec:
         rules:
         - host: vehicle.parklensedev.com
@@ -82,6 +81,14 @@ patches:
                     number: 80
             # Admin interface
             - path: /admin
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-backend-service
+                  port:
+                    number: 80
+            # Root path - catch all remaining
+            - path: /
               pathType: Prefix
               backend:
                 service:

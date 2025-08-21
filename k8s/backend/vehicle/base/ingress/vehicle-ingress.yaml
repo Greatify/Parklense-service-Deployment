@@ -39,7 +39,7 @@ spec:
                 name: parklense-vehicle-backend-service
                 port:
                   number: 80
-          # Vehicle API endpoints
+          # Vehicle API endpoints (from API Gateway)
           - path: /api/v1
             pathType: Prefix
             backend:
@@ -49,6 +49,14 @@ spec:
                   number: 80
           # Admin interface
           - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-backend-service
+                port:
+                  number: 80
+          # Root path - catch all remaining
+          - path: /
             pathType: Prefix
             backend:
               service:
