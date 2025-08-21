@@ -29,7 +29,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Add_authentication_endpoints_f-20250821-093036-095f6cd
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_URL_patterns_in_confi-20250821-124836-1925458
               resources:
                 requests:
                   cpu: "0.5"
@@ -57,7 +57,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Add_authentication_endpoints_f-20250821-093036-095f6cd
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_URL_patterns_in_confi-20250821-124836-1925458
               resources:
                 requests:
                   cpu: "0.25"
@@ -94,7 +94,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Add_authentication_endpoints_f-20250821-093036-095f6cd
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Refactor_URL_patterns_in_confi-20250821-124836-1925458
               resources:
                 requests:
                   cpu: "0.1"
