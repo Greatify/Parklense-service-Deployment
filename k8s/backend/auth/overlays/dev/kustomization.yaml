@@ -180,13 +180,6 @@ patches:
                   port:
                     number: 80
             # Documentation endpoints
-            - path: /docs
-              pathType: Prefix
-              backend:
-                service:
-                  name: parklense-auth-backend-service
-                  port:
-                    number: 80
             - path: /api/schema
               pathType: Prefix
               backend:

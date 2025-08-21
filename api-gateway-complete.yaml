@@ -54,6 +54,27 @@ paths:
         type: "http_proxy"
         httpMethod: "GET"
         uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/swagger/"
+
+  # Static files for documentation - Auth service
+  /static/{proxy+}:
+    get:
+      summary: "Static files for documentation"
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Static file content"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/static/{proxy}"
+        requestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
         connectionType: "INTERNET"
         requestParameters:
           integration.request.header.Host: "'api.parklensedev.com'"
