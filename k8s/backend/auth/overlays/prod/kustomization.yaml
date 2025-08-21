@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: prod-parklense-auth
 
 resources:
-  - ../../../base/auth
+  - ../../base
   - storage/pv.yaml
   - storage/pvc.yaml
 

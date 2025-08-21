@@ -73,7 +73,7 @@ jobs:
       - name: Update deployment image tags
         run: |
           # Update auth service image tags in overlay files
-          sed -i 's|image: .*|image: '"$BACKEND_IMAGE"'|' k8s/backend/overlays/auth/prod/kustomization.yaml
+          sed -i 's|image: .*|image: '"$BACKEND_IMAGE"'|' k8s/backend/auth/overlays/prod/kustomization.yaml
 
       - name: Commit and push changes
         run: |
@@ -83,7 +83,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit"
           else
-            git add k8s/backend/overlays/auth/prod/
+            git add k8s/backend/auth/overlays/prod/
             git commit -m "🚀 Deploy to production: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
             git push origin main
           fi
@@ -121,7 +121,7 @@ jobs:
       - name: Deploy to production environment
         run: |
           echo "🚀 Starting production deployment..."
-          kubectl apply -k k8s/backend/overlays/auth/prod
+          kubectl apply -k k8s/backend/auth/overlays/prod
           
           echo "⏳ Waiting for deployments to complete..."
           kubectl rollout status deployment/parklense-auth-backend -n prod-parklense-auth --timeout=600s

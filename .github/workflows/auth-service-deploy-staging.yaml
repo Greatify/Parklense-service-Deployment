@@ -54,11 +54,11 @@ jobs:
       - name: Update deployment image tags
         run: |
           # Update auth service image tags in overlay files
-          sed -i 's|image: .*|image: '"$BACKEND_IMAGE"'|' k8s/backend/overlays/auth/staging/kustomization.yaml
+          sed -i 's|image: .*|image: '"$BACKEND_IMAGE"'|' k8s/backend/auth/overlays/staging/kustomization.yaml
           
           # Update vehicle service image tag if provided
           if [ -n "${{ github.event.inputs.vehicle_image }}" ]; then
-            sed -i 's|image: .*|image: '"$VEHICLE_IMAGE"'|' k8s/backend/overlays/vehicle/staging/kustomization.yaml
+            sed -i 's|image: .*|image: '"$VEHICLE_IMAGE"'|' k8s/backend/vehicle/overlays/staging/kustomization.yaml
           fi
 
       - name: Commit and push changes
@@ -69,9 +69,9 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit"
           else
-            git add k8s/backend/overlays/auth/staging/
+            git add k8s/backend/auth/overlays/staging/
             if [ -n "${{ github.event.inputs.vehicle_image }}" ]; then
-              git add k8s/backend/overlays/vehicle/staging/
+              git add k8s/backend/vehicle/overlays/staging/
             fi
             git commit -m "🚀 Deploy to staging: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
             git push origin main
@@ -90,7 +90,7 @@ jobs:
 
       - name: Deploy to staging environment
         run: |
-          kubectl apply -k k8s/backend/overlays/auth/staging
+          kubectl apply -k k8s/backend/auth/overlays/staging
           kubectl rollout status deployment/parklense-auth-backend -n staging-parklense-auth --timeout=300s
           kubectl rollout status deployment/parklense-auth-celery-worker -n staging-parklense-auth --timeout=300s
           kubectl rollout status deployment/parklense-auth-celery-beat -n staging-parklense-auth --timeout=300s

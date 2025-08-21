@@ -54,7 +54,7 @@ jobs:
       - name: Update deployment image tags
         run: |
           # Update vehicle service image tag in overlay files
-          sed -i 's|image: .*|image: '"$BACKEND_IMAGE"'|' k8s/backend/overlays/vehicle/staging/kustomization.yaml
+          sed -i 's|image: .*|image: '"$BACKEND_IMAGE"'|' k8s/backend/vehicle/overlays/staging/kustomization.yaml
 
       - name: Commit and push changes
         run: |
@@ -64,7 +64,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit"
           else
-            git add k8s/backend/overlays/vehicle/staging/
+            git add k8s/backend/vehicle/overlays/staging/
             git commit -m "🚀 Deploy to staging: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
             git push origin main
           fi
@@ -82,7 +82,7 @@ jobs:
 
       - name: Deploy to staging environment
         run: |
-          kubectl apply -k k8s/backend/overlays/vehicle/staging
+          kubectl apply -k k8s/backend/vehicle/overlays/staging
           kubectl rollout status deployment/parklense-vehicle-backend -n staging-parklense-vehicle --timeout=300s
 
       - name: Verify deployment
