@@ -84,6 +84,29 @@ spec:
                 name: parklense-auth-backend-service
                 port:
                   number: 80
+          - path: /api/v1/redoc
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          # Static files for documentation
+          - path: /static
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
+          # Admin interface
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-auth-backend-service
+                port:
+                  number: 80
           # Root path - catch all remaining
           - path: /
             pathType: Prefix

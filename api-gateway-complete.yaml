@@ -73,10 +73,9 @@ paths:
         type: "http_proxy"
         httpMethod: "GET"
         uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/static/{proxy}"
-        requestParameters:
-          integration.request.path.proxy: "method.request.path.proxy"
         connectionType: "INTERNET"
         requestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
           integration.request.header.Host: "'api.parklensedev.com'"
         responses:
           default:
@@ -197,6 +196,56 @@ paths:
               method.response.header.Access-Control-Allow-Origin: "'*'"
               method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-API-Key'"
+
+  # Admin interface root - Auth service
+  /admin:
+    get:
+      summary: "Admin interface root"
+      responses:
+        '200':
+          description: "Admin interface root page"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/admin/"
+        connectionType: "INTERNET"
+        requestParameters:
+          integration.request.header.Host: "'api.parklensedev.com'"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+
+  # Admin interface - Auth service
+  /admin/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      description: "Admin interface proxy path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      summary: "Admin interface"
+      responses:
+        '200':
+          description: "Admin interface response"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/admin/{proxy}"
+        connectionType: "INTERNET"
+        requestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.Host: "'api.parklensedev.com'"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
 
   # Auth Service - Direct routes (cleaner URLs)
   /auth/{proxy+}:

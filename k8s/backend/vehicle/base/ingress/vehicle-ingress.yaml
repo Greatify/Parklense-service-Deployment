@@ -47,6 +47,36 @@ spec:
                 name: parklense-vehicle-backend-service
                 port:
                   number: 80
+          # API Documentation endpoints
+          - path: /api/schema
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-backend-service
+                port:
+                  number: 80
+          - path: /api/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-backend-service
+                port:
+                  number: 80
+          - path: /api/redoc
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-backend-service
+                port:
+                  number: 80
+          # Static files for documentation
+          - path: /static
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-backend-service
+                port:
+                  number: 80
           # Admin interface
           - path: /admin
             pathType: Prefix
