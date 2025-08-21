@@ -29,7 +29,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_default_log_level_to_de-20250731-044918-85d5077
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Add_authentication_endpoints_f-20250821-093036-095f6cd
               resources:
                 requests:
                   cpu: "0.5"
@@ -57,7 +57,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_default_log_level_to_de-20250731-044918-85d5077
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Add_authentication_endpoints_f-20250821-093036-095f6cd
               resources:
                 requests:
                   cpu: "0.25"
@@ -94,7 +94,7 @@ patches:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Update_default_log_level_to_de-20250731-044918-85d5077
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Add_authentication_endpoints_f-20250821-093036-095f6cd
               resources:
                 requests:
                   cpu: "0.1"
