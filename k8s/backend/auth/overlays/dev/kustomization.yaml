@@ -257,7 +257,7 @@ patches:
         name: parklense-auth-backend-autoscaler
       spec:
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 2
     target:
       kind: HorizontalPodAutoscaler
       name: parklense-auth-backend-autoscaler
