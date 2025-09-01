@@ -68,7 +68,7 @@ spec:
             - name: UVICORN_LOG_LEVEL
               value: "debug"
             - name: ALLOWED_HOSTS
-              value: "vehicle.parklensedev.com"
+              value: "*"
             - name: CORS_ALLOWED_ORIGINS
               value: "https://vehicle.parklensedev.com"
           envFrom:
