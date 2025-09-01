@@ -22,24 +22,12 @@ Unified API Gateway configuration for Auth and Vehicle services using single dom
 
 ```yaml
 # 1. Auth Service Routes
-/admin:
-  ANY → http://parklense-auth-dev-alb-*.elb.amazonaws.com/admin
-  Host: api.parklensedev.com
-
 /admin/{proxy+}:
   ANY → http://parklense-auth-dev-alb-*.elb.amazonaws.com/admin/{proxy}
   Host: api.parklensedev.com
 
-/api/v1/auth:
-  ANY → http://parklense-auth-dev-alb-*.elb.amazonaws.com/api/v1/auth/
-  Host: api.parklensedev.com
-
 /api/v1/auth/{proxy+}:
   ANY → http://parklense-auth-dev-alb-*.elb.amazonaws.com/api/v1/auth/{proxy}
-  Host: api.parklensedev.com
-
-/api/v1/profile:
-  ANY → http://parklense-auth-dev-alb-*.elb.amazonaws.com/api/v1/profile/
   Host: api.parklensedev.com
 
 /api/v1/profile/{proxy+}:
@@ -47,16 +35,12 @@ Unified API Gateway configuration for Auth and Vehicle services using single dom
   Host: api.parklensedev.com
 
 # 2. Vehicle Service Routes  
-/api/v1/vehicles:
-  ANY → http://parklense-vehicle-dev-alb-*.elb.amazonaws.com/api/v1/vehicles/
-  Host: api.parklensedev.com
-
 /api/v1/vehicles/{proxy+}:
   ANY → http://parklense-vehicle-dev-alb-*.elb.amazonaws.com/api/v1/vehicles/{proxy}
   Host: api.parklensedev.com
 
-/api/v1/vehicle-types:
-  ANY → http://parklense-vehicle-dev-alb-*.elb.amazonaws.com/api/v1/vehicle-types/
+/api/v1/vehicle-types/{proxy+}:
+  ANY → http://parklense-vehicle-dev-alb-*.elb.amazonaws.com/api/v1/vehicle-types/{proxy}
   Host: api.parklensedev.com
 
 /api/v1/users/initialize:
@@ -71,10 +55,6 @@ Unified API Gateway configuration for Auth and Vehicle services using single dom
 /health/vehicles:
   GET → http://parklense-vehicle-dev-alb-*.elb.amazonaws.com/health/
   Host: api.parklensedev.com
-
-/health:
-  GET → http://parklense-auth-dev-alb-*.elb.amazonaws.com/api/v1/health/
-  Host: api.parklensedev.com (defaults to auth service)
 
 # 4. Documentation Routes (Service-Specific)
 /docs/auth/schema:
@@ -100,11 +80,6 @@ Unified API Gateway configuration for Auth and Vehicle services using single dom
 /docs/vehicles/redoc:
   GET → http://parklense-vehicle-dev-alb-*.elb.amazonaws.com/api/redoc/
   Host: api.parklensedev.com
-
-# 5. Legacy Routes (Backward Compatibility)
-/api/schema:
-  GET → http://parklense-auth-dev-alb-*.elb.amazonaws.com/api/schema/
-  Host: api.parklensedev.com (defaults to auth service)
 ```
 
 ## Configuration Steps

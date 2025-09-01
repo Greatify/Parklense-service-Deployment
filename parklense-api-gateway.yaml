@@ -152,18 +152,24 @@ paths:
         connectionType: "INTERNET"
         timeoutInMillis: 30000
 
-  /api/v1/vehicle-types:
+  /api/v1/vehicle-types/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
     x-amazon-apigateway-any-method:
       responses:
         default:
-          description: "Vehicle types"
+          description: "Vehicle types proxy"
       x-amazon-apigateway-integration:
         requestParameters:
           overwrite:header.Host: "api.parklensedev.com"
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicle-types/"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicle-types/{proxy}"
         connectionType: "INTERNET"
         timeoutInMillis: 30000
 
