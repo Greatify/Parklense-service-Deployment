@@ -60,7 +60,7 @@ patches:
           alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}, {"HTTP": 80}]'
       spec:
         rules:
-        - host: vehicle.parklensedev.com
+        - host: api.parklensedev.com
           http:
             paths:
             # Health check endpoint
@@ -97,7 +97,7 @@ patches:
                     number: 80
         tls:
           - hosts:
-              - vehicle.parklensedev.com
+              - api.parklensedev.com
             secretName: parklense-vehicle-tls
     target:
       kind: Ingress

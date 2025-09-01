@@ -28,7 +28,7 @@ metadata:
 
 spec:
   rules:
-    - host: vehicle.parklensedev.com
+    - host: api.parklensedev.com
       http:
         paths:
           # Health check endpoint
