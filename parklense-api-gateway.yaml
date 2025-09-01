@@ -1,0 +1,369 @@
+openapi: "3.0.1"
+info:
+  title: "Parklense API Gateway"
+  description: "Unified API Gateway for Auth and Vehicle services"
+  version: "1.0.0"
+servers:
+- url: "https://api.parklensedev.com"
+paths:
+  # Auth Service Routes
+  /admin:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Admin interface"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/admin"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /admin/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Admin proxy"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/admin/{proxy}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /api/v1/auth:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Auth service base"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/auth/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /api/v1/auth/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Auth service proxy"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/auth/{proxy}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /api/v1/profile:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Profile service base"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/profile/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /api/v1/profile/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Profile service proxy"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/profile/{proxy}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  # Vehicle Service Routes
+  /api/v1/vehicles:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Vehicle service base"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicles/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /api/v1/vehicles/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Vehicle service proxy"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicles/{proxy}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /api/v1/vehicle-types:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Vehicle types"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicle-types/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /api/v1/users/initialize:
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "User initialization"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/users/initialize/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  # Health Check Routes (Service-Specific)
+  /health/auth:
+    get:
+      responses:
+        default:
+          description: "Auth service health check"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/health/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /health/vehicles:
+    get:
+      responses:
+        default:
+          description: "Vehicle service health check"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/health/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /health:
+    get:
+      responses:
+        default:
+          description: "Global health check (defaults to auth)"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/health/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  # Documentation Routes (Service-Specific)
+  /docs/auth/schema:
+    get:
+      responses:
+        default:
+          description: "Auth service OpenAPI schema"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/schema/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /docs/vehicles/schema:
+    get:
+      responses:
+        default:
+          description: "Vehicle service OpenAPI schema"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/schema/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /docs/auth:
+    get:
+      responses:
+        default:
+          description: "Auth service Swagger UI"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/swagger/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /docs/vehicles:
+    get:
+      responses:
+        default:
+          description: "Vehicle service Swagger UI"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/docs/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /docs/auth/redoc:
+    get:
+      responses:
+        default:
+          description: "Auth service ReDoc"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/redoc/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  /docs/vehicles/redoc:
+    get:
+      responses:
+        default:
+          description: "Vehicle service ReDoc"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/redoc/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+  # Legacy/Compatibility Routes (Optional - for backward compatibility)
+  /api/schema:
+    get:
+      responses:
+        default:
+          description: "Auth service schema (legacy route)"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/schema/"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
+x-amazon-apigateway-cors:
+  allowMethods:
+  - "DELETE"
+  - "GET"
+  - "OPTIONS"
+  - "PATCH"
+  - "POST"
+  - "PUT"
+  allowHeaders:
+  - "authorization"
+  - "content-type"
+  - "x-api-key"
+  - "x-app-version"
+  - "x-device-id"
+  - "x-platform"
+  - "x-request-id"
+  exposeHeaders:
+  - "x-api-version"
+  - "x-request-id"
+  maxAge: 3600
+  allowCredentials: false
+  allowOrigins:
+  - "https://api.parklensedev.com"
+  - "https://admin.parklensedev.com"
+  - "https://app.parklensedev.com"
+  - "https://parklensedev.com"
+  - "https://www.parklensedev.com"
+  - "http://localhost:3000"
+  - "http://localhost:3001"
+  - "http://localhost:8080"
+
+x-amazon-apigateway-importexport-version: "1.0"
