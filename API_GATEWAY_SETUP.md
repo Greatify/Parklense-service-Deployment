@@ -47,7 +47,12 @@ Unified API Gateway configuration for Auth and Vehicle services using single dom
   ANY → http://parklense-vehicle-dev-alb-*.elb.amazonaws.com/api/v1/users/initialize/
   Host: api.parklensedev.com
 
-# 3. Health Routes (Service-Specific)
+# 3. Static Files Routes
+/static/{proxy+}:
+  ANY → http://parklense-auth-dev-alb-*.elb.amazonaws.com/static/{proxy}
+  Host: api.parklensedev.com
+
+# 4. Health Routes (Service-Specific)
 /health/auth:
   GET → http://parklense-auth-dev-alb-*.elb.amazonaws.com/api/v1/health/
   Host: api.parklensedev.com

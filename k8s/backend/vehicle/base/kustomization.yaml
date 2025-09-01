@@ -14,6 +14,7 @@ resources:
   
   # Vehicle Service - Configurations
   - configmap/vehicle-config.yaml
+  - configmap/nginx-config.yaml
   - secrets/parklense-vehicle-secrets.yaml
   # - secrets/parklense-vehicle-sa.yaml
   

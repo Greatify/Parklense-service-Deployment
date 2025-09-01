@@ -325,6 +325,28 @@ paths:
         connectionType: "INTERNET"
         timeoutInMillis: 30000
 
+  # Static Files Routes
+  /static/{proxy+}:
+    parameters:
+    - name: "proxy+"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    x-amazon-apigateway-any-method:
+      responses:
+        default:
+          description: "Static files proxy (auth service)"
+      x-amazon-apigateway-integration:
+        requestParameters:
+          overwrite:header.Host: "api.parklensedev.com"
+        payloadFormatVersion: "1.0"
+        type: "http_proxy"
+        httpMethod: "ANY"
+        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/static/{proxy}"
+        connectionType: "INTERNET"
+        timeoutInMillis: 30000
+
   # Legacy/Compatibility Routes (Optional - for backward compatibility)
   /api/schema:
     get:
