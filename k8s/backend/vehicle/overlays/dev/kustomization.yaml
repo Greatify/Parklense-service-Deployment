@@ -29,7 +29,7 @@ patches:
             serviceAccountName: parklense-vehicle-secret-sa
             containers:
             - name: vehicle-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:chore__update_Python_version_i-20250919-101953-6aa15b1
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:__feat__implement_dynamic_vehi-20250922-045432-fd14fa2
               resources:
                 requests:
                   cpu: "0.25"
