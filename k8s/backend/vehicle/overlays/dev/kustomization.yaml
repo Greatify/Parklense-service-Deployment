@@ -30,13 +30,14 @@ patches:
             containers:
             - name: vehicle-backend
               image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:refactor__update_vehicle_type_-20250922-051850-7175cf9
-              resources:
-                requests:
-                  cpu: "0.25"
-                  memory: "512Mi"
-                limits:
-                  cpu: "0.5"
-                  memory: "1Gi"
+              resources: null  # Commented out for dev environment
+              # resources:
+              #   requests:
+              #     cpu: "0.25"
+              #     memory: "512Mi"
+              #   limits:
+              #     cpu: "0.5"
+              #     memory: "1Gi"
               env:
               - name: WORKERS
                 value: "2"

@@ -30,13 +30,14 @@ patches:
             containers:
             - name: parklense-auth-backend
               image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Auth_setup___15___Refactor_URL-20250917-124129-f60f300
-              resources:
-                requests:
-                  cpu: "0.5"
-                  memory: "1Gi"
-                limits:
-                  cpu: "1"
-                  memory: "2Gi"
+              resources: null  # Commented out for dev environment
+              # resources:
+              #   requests:
+              #     cpu: "0.5"
+              #     memory: "1Gi"
+              #   limits:
+              #     cpu: "1"
+              #     memory: "2Gi"
               env:
               - name: WORKERS
                 value: "2"
@@ -58,13 +59,14 @@ patches:
             containers:
             - name: parklense-auth-celery-worker
               image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Auth_setup___15___Refactor_URL-20250917-124129-f60f300
-              resources:
-                requests:
-                  cpu: "0.25"
-                  memory: "512Mi"
-                limits:
-                  cpu: "0.5"
-                  memory: "1Gi"
+              resources: null  # Commented out for dev environment
+              # resources:
+              #   requests:
+              #     cpu: "0.25"
+              #     memory: "512Mi"
+              #   limits:
+              #     cpu: "0.5"
+              #     memory: "1Gi"
               command:
                 - celery
                 - -A
@@ -95,13 +97,14 @@ patches:
             containers:
             - name: parklense-auth-celery-beat
               image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Auth_setup___15___Refactor_URL-20250917-124129-f60f300
-              resources:
-                requests:
-                  cpu: "0.1"
-                  memory: "256Mi"
-                limits:
-                  cpu: "0.25"
-                  memory: "512Mi"
+              resources: null  # Commented out for dev environment
+              # resources:
+              #   requests:
+              #     cpu: "0.1"
+              #     memory: "256Mi"
+              #   limits:
+              #     cpu: "0.25"
+              #     memory: "512Mi"
     target:
       kind: Deployment
       name: parklense-auth-celery-beat
@@ -118,13 +121,14 @@ patches:
           spec:
             containers:
             - name: redis
-              resources:
-                requests:
-                  cpu: "0.1"
-                  memory: "256Mi"
-                limits:
-                  cpu: "0.25"
-                  memory: "512Mi"
+              resources: null  # Commented out for dev environment
+              # resources:
+              #   requests:
+              #     cpu: "0.1"
+              #     memory: "256Mi"
+              #   limits:
+              #     cpu: "0.25"
+              #     memory: "512Mi"
     target:
       kind: Deployment
       name: parklense-auth-redis
