@@ -149,7 +149,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     needs: [build-auth-dev-image]
     environment: 
-      name: development
+      name: dev
       url: https://auth.parklensedev.com
     
     steps:
