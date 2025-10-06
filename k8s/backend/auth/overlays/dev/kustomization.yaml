@@ -25,6 +25,9 @@ patches:
       spec:
         replicas: 1
         template:
+          metadata:
+            annotations:
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Auth_setup___15___Refactor_URL-20250917-124129-f60f300"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
@@ -54,6 +57,9 @@ patches:
       spec:
         replicas: 1
         template:
+          metadata:
+            annotations:
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Auth_setup___15___Refactor_URL-20250917-124129-f60f300"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
@@ -92,6 +98,9 @@ patches:
       spec:
         replicas: 1
         template:
+          metadata:
+            annotations:
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:Auth_setup___15___Refactor_URL-20250917-124129-f60f300"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:

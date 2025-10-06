@@ -25,6 +25,9 @@ patches:
       spec:
         replicas: 1
         template:
+          metadata:
+            annotations:
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:feat__enhance_vehicle_manageme-20250924-113444-888510c"
           spec:
             serviceAccountName: parklense-vehicle-secret-sa
             containers:

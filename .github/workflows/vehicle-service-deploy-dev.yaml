@@ -88,7 +88,6 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-managment-service:latest
             ${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-managment-service:${{ steps.generate-tag.outputs.IMAGE_TAG }}
           platforms: linux/arm64
           build-args: |
@@ -162,8 +161,9 @@ jobs:
       - name: Update deployment image tag in Kustomization
         run: |
           # Update image tags in the dev overlay kustomization file
-          sed -i 's|image: "[^"]*"|image: "'"$VEHICLE_IMAGE"'"|g' k8s/backend/vehicle/overlays/dev/kustomization.yaml
-          sed -i 's|kubernetes.io/change-cause:.*|kubernetes.io/change-cause: Updated to "'"$VEHICLE_IMAGE"'"|g' k8s/backend/vehicle/overlays/dev/kustomization.yaml
+          sed -i 's|image: 399600302704\.dkr\.ecr\..*\.amazonaws\.com/parklense-vehicle-managment-service:.*|image: '"$VEHICLE_IMAGE"'|g' k8s/backend/vehicle/overlays/dev/kustomization.yaml
+          # Update change-cause annotations in overlays
+          sed -i 's|kubernetes\.io/change-cause: "Updated to 399600302704\.dkr\.ecr\..*\.amazonaws\.com/parklense-vehicle-managment-service:.*"|kubernetes.io/change-cause: "Updated to '"$VEHICLE_IMAGE"'"|g' k8s/backend/vehicle/overlays/dev/kustomization.yaml
 
       - name: Commit and push changes
         run: |

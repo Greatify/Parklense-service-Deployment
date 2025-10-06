@@ -29,10 +29,13 @@ patches:
           metadata:
             labels:
               app: parklens-frontend
+            annotations:
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:Updated_languages_for_static_d-20250731-085348-8f5dc1c"
           spec:
             containers:
             - name: parklens-frontend
               image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:Updated_languages_for_static_d-20250731-085348-8f5dc1c
+              
               imagePullPolicy: Always
               ports:
               - containerPort: 80
