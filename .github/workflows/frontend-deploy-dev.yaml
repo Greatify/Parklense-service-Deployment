@@ -3,62 +3,212 @@ name: Frontend - Deploy to Development
 on:
   workflow_dispatch:
     inputs:
-      image:
-        description: 'Frontend Docker image to deploy'
+      deploy_branch:
+        description: 'Branch to deploy from source repo'
         required: true
-      sha:
+        type: string
+        default: 'main'
+      commit_sha:
         description: 'Git SHA of the commit'
         required: true
+        type: string
       commit_message:
         description: 'Original commit message'
         required: true
+        type: string
 
-jobs:
-  deploy-frontend-dev:
-    runs-on: ubuntu-latest
-    environment: 
-      name: development
-      url: https://parklensedev.com  # Updated URL
-    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:   
+  build-frontend-dev-image:
+    runs-on: ubuntu-24.04-arm
+    environment: dev
     steps:
-      - name: Display Deployment Information
+      - name: Display Build Information
         run: |
-          echo "Frontend Image: ${{ github.event.inputs.image }}"
-          echo "SHA: ${{ github.event.inputs.sha }}"
+          echo "Branch: ${{ github.event.inputs.deploy_branch }}"
+          echo "Commit SHA: ${{ github.event.inputs.commit_sha }}"
           echo "Commit Message: ${{ github.event.inputs.commit_message }}"
 
+      - name: Checkout source repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.deploy_branch }}
+          repository: 'Greatify/parklens_frontend'
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Configure AWS credentials for ECR
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Fetch secrets before Docker build
+      - name: Fetch secrets from AWS Secrets Manager
+        id: fetch-secrets
+        run: |
+          aws secretsmanager get-secret-value \
+            --secret-id parklense-frontend-dev \
+            --query SecretString \
+            --output text > .env
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: v0.12.0
+          driver-opts: |
+            image=moby/buildkit:v0.12.0
+          buildkitd-flags: |
+            --debug
+            --allow-insecure-entitlement security.insecure
+            --allow-insecure-entitlement network.host
+          config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+            [worker.oci]
+              max-parallelism = 4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo apt-get clean
+          docker system prune -af
+          df -h
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Generate dev image tag
+        id: generate-tag
+        run: |
+          COMMIT_ID="${{ github.event.inputs.commit_sha }}"
+          COMMIT_MSG="${{ github.event.inputs.commit_message }}"
+          
+          # Remove newlines, tabs, and limit length
+          CLEAN_MSG=$(echo "$COMMIT_MSG" | tr -d '\n\r\t' | head -c 60 | tr -s ' ' | xargs || echo "no-message")
+          # Sanitize to safe characters only
+          SAFE_MSG=$(echo "$CLEAN_MSG" | sed -e 's/[^a-zA-Z0-9 _-]//g' -e 's/[[:space:]]/-/g' -e 's/--*/-/g' -e 's/^-\+\|-\+$//g' | cut -c1-35 | sed 's/-$//' || echo "fallback")
+          # Ensure we have a valid tag
+          FINAL_MSG=$(echo "$SAFE_MSG" | grep -E '^[a-zA-Z0-9][a-zA-Z0-9_-]*$' || echo "commit-$(date +%s)")
+          IMAGE_TAG="dev-${FINAL_MSG}-${COMMIT_ID}"
+          
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "Generated Image Tag: $IMAGE_TAG"
+
+      - name: Build and push frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/parklens-frontend:latest
+            ${{ steps.login-ecr.outputs.registry }}/parklens-frontend:${{ steps.generate-tag.outputs.IMAGE_TAG }}
+          platforms: linux/arm64
+          build-args: |
+            ENV_FILE=.env
+            BUILDKIT_INLINE_CACHE=1
+          cache-from: |
+            type=gha
+            type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklens-frontend:cache
+          cache-to: |
+            type=gha,mode=max
+            type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklens-frontend:cache,mode=max
+          no-cache: false
+          pull: true
+
+      - name: Save image tag to file
+        run: |
+          echo "${{ steps.login-ecr.outputs.registry }}/parklens-frontend:${{ steps.generate-tag.outputs.IMAGE_TAG }}" > frontend_image_tag.txt
+
+      - name: Upload frontend image tag file
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-image-tag
+          path: frontend_image_tag.txt
+          if-no-files-found: error
+
+      # Clean up .env file
+      - name: Cleanup .env File
+        run: rm -f .env
+
+      - name: Send Docker build failure notification
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: Frontend Docker Build Failure 🐳
+          mention: channel
+          if_mention: always
+          job_name: build-frontend-dev-image
+          channel: parklens-deployment-alerts
+          username: Parklense-CICD
+          text: |
+            ❌ *Frontend Docker build failed for dev deployment* 🐳
+            *Commit:* `${{ github.event.inputs.commit_sha }}` 
+            *Message:* ${{ github.event.inputs.commit_message }}
+            Please fix the Docker build issues.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  deploy-frontend-dev:
+    runs-on: ubuntu-24.04-arm
+    needs: [build-frontend-dev-image]
+    environment: 
+      name: dev
+      url: https://parklensedev.com
+    
+    steps:
       - name: Checkout deployment repository
         uses: actions/checkout@v4
         with:
+          repository: 'Greatify/Parklense-service-Deployment'
+          ref: 'main'
           token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
-      - name: Set environment variables
-        run: |
-          echo "FRONTEND_IMAGE=${{ github.event.inputs.image }}" >> $GITHUB_ENV
-          echo "COMMIT_SHA=${{ github.event.inputs.sha }}" >> $GITHUB_ENV
-          echo "COMMIT_MESSAGE=${{ github.event.inputs.commit_message }}" >> $GITHUB_ENV
-          echo "DEPLOY_ACTOR=${{ github.actor }}" >> $GITHUB_ENV
+      - name: Download image tag files
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-image-tag
+          path: .
 
-      - name: Update frontend image tags
+      - name: Set image tags as environment variables
         run: |
-          # Update the image tag in the deployment patch
-          sed -i 's|image: .*|image: '"$FRONTEND_IMAGE"'|' k8s/frontend/overlays/dev/kustomization.yaml
+          echo "FRONTEND_IMAGE=$(cat frontend_image_tag.txt)" >> $GITHUB_ENV
+
+      - name: Update deployment image tag in Kustomization
+        run: |
+          # Update image tags in the dev overlay kustomization file
+          sed -i 's|image: "[^"]*"|image: "'"$FRONTEND_IMAGE"'"|g' k8s/frontend/overlays/dev/kustomization.yaml
+          sed -i 's|kubernetes.io/change-cause:.*|kubernetes.io/change-cause: Updated to "'"$FRONTEND_IMAGE"'"|g' k8s/frontend/overlays/dev/kustomization.yaml
 
       - name: Commit and push changes
         run: |
-          git config --local user.email "deployment@parklens.com"
-          git config --local user.name "Parklens Frontend Deployment Bot"
+          git config --local user.email "deployment@parklense.com"
+          git config --local user.name "Parklense Frontend Deployment Bot"
+          git add k8s/frontend/overlays/dev/kustomization.yaml
           
-          if git diff --quiet; then
-            echo "No changes to commit"
+          # Check if there are any changes to commit
+          if git diff --cached --quiet; then
+            echo "No changes to commit, skipping commit and push"
           else
-            git add k8s/frontend/overlays/dev/
-            git commit -m "🚀 Frontend Deploy to dev: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
+            echo "Changes detected, committing and pushing"
+            git commit -m "🚀 Update Frontend image tags for dev deployment - ${{ github.event.inputs.commit_message }}"
             git push origin main
           fi
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials for deployment
         uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -66,10 +216,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Update Kubernetes configuration
-        run: |
-          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
-      - name: Deploy frontend to development environment
+      - name: Deploy to development environment
         run: |
           kubectl apply -k k8s/frontend/overlays/dev
 
@@ -77,11 +226,20 @@ jobs:
         if: success()
         uses: 8398a7/action-slack@v3
         with:
-          status: success
+          status: ${{ job.status }}
+          author_name: Frontend Deployment Success
+          mention: channel
+          if_mention: success
+          job_name: deploy-frontend-dev
           channel: parklens-deployment-alerts
+          username: Parklense-CICD
           text: |
-            :rocket: *Frontend - Dev Deployed Successfully*
-            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
+            :rocket: *Frontend deployment to dev environment succeeded*
+            
+            *Commit:* `${{ github.event.inputs.commit_sha }}` 
+            *Message:* ${{ github.event.inputs.commit_message }}
+            
+            Your changes have been deployed successfully to Development.
             *URL:* https://parklensedev.com
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -90,11 +248,19 @@ jobs:
         if: failure()
         uses: 8398a7/action-slack@v3
         with:
-          status: failure
+          status: ${{ job.status }}
+          author_name: Frontend Deployment Failure ❌
+          mention: channel
+          if_mention: failure
+          job_name: deploy-frontend-dev
           channel: parklens-deployment-alerts
+          username: Parklense-CICD
           text: |
-            :x: *Frontend - Dev Deployment Failed*
-            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
-            Check logs for details.
+            ❌ *Frontend Dev Deployment Failed*
+            
+            *Commit:* `${{ github.event.inputs.commit_sha }}` 
+            *Message:* ${{ github.event.inputs.commit_message }}
+            
+            Please check the logs and fix the issues immediately.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 
