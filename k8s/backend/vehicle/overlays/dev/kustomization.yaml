@@ -27,12 +27,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:feat__enhance_vehicle_manageme-20250924-113444-888510c"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:dev-chore-replace-build-deploy-workflow-ac11ebc27acd3fea9d79e750f071f8859c6893ce"
           spec:
             serviceAccountName: parklense-vehicle-secret-sa
             containers:
             - name: vehicle-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:feat__enhance_vehicle_manageme-20250924-113444-888510c
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:dev-chore-replace-build-deploy-workflow-ac11ebc27acd3fea9d79e750f071f8859c6893ce
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
