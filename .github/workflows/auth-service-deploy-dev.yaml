@@ -98,6 +98,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./docker/Dockerfile
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/parklense-auth:latest
@@ -107,10 +108,8 @@ jobs:
             ENVIRONMENT=development
             BUILDKIT_INLINE_CACHE=1
           cache-from: |
-            type=gha
             type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-auth:cache
           cache-to: |
-            type=gha,mode=max
             type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-auth:cache,mode=max
           no-cache: false
           pull: true
