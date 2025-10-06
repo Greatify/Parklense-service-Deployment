@@ -3,62 +3,197 @@ name: Vehicle Service - Deploy to Development
 on:
   workflow_dispatch:
     inputs:
-      image:
-        description: 'Vehicle service Docker image to deploy'
+      deploy_branch:
+        description: 'Branch to deploy from source repo'
         required: true
-      sha:
+        type: string
+        default: 'main'
+      commit_sha:
         description: 'Git SHA of the commit'
         required: true
+        type: string
       commit_message:
         description: 'Original commit message'
         required: true
+        type: string
 
-jobs:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:   
+  build-vehicle-dev-image:
+    runs-on: ubuntu-24.04-arm
+    environment: dev
+    steps:
+      - name: Display Build Information
+        run: |
+          echo "Branch: ${{ github.event.inputs.deploy_branch }}"
+          echo "Commit SHA: ${{ github.event.inputs.commit_sha }}"
+          echo "Commit Message: ${{ github.event.inputs.commit_message }}"
+
+      - name: Checkout source repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.deploy_branch }}
+          repository: 'Greatify/Parklense-vehicle-managment-service'
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: v0.12.0
+          driver-opts: |
+            image=moby/buildkit:v0.12.0
+          buildkitd-flags: |
+            --debug
+            --allow-insecure-entitlement security.insecure
+            --allow-insecure-entitlement network.host
+          config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+            [worker.oci]
+              max-parallelism = 4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo apt-get clean
+          docker system prune -af
+          df -h
+
+      - name: Configure AWS credentials for ECR
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Generate dev image tag
+        id: generate-tag
+        run: |
+          COMMIT_ID="${{ github.event.inputs.commit_sha }}"
+          COMMIT_MSG="${{ github.event.inputs.commit_message }}"
+          
+          # Remove newlines, tabs, and limit length
+          CLEAN_MSG=$(echo "$COMMIT_MSG" | tr -d '\n\r\t' | head -c 60 | tr -s ' ' | xargs || echo "no-message")
+          # Sanitize to safe characters only
+          SAFE_MSG=$(echo "$CLEAN_MSG" | sed -e 's/[^a-zA-Z0-9 _-]//g' -e 's/[[:space:]]/-/g' -e 's/--*/-/g' -e 's/^-\+\|-\+$//g' | cut -c1-35 | sed 's/-$//' || echo "fallback")
+          # Ensure we have a valid tag
+          FINAL_MSG=$(echo "$SAFE_MSG" | grep -E '^[a-zA-Z0-9][a-zA-Z0-9_-]*$' || echo "commit-$(date +%s)")
+          IMAGE_TAG="dev-${FINAL_MSG}-${COMMIT_ID}"
+          
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "Generated Image Tag: $IMAGE_TAG"
+
+      - name: Build and push vehicle service Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-managment-service:latest
+            ${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-managment-service:${{ steps.generate-tag.outputs.IMAGE_TAG }}
+          platforms: linux/arm64
+          build-args: |
+            ENVIRONMENT=development
+            BUILDKIT_INLINE_CACHE=1
+          cache-from: |
+            type=gha
+            type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-managment-service:cache
+          cache-to: |
+            type=gha,mode=max
+            type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-managment-service:cache,mode=max
+          no-cache: false
+          pull: true
+
+      - name: Save image tag to file
+        run: |
+          echo "${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-managment-service:${{ steps.generate-tag.outputs.IMAGE_TAG }}" > vehicle_image_tag.txt
+
+      - name: Upload vehicle image tag file
+        uses: actions/upload-artifact@v4
+        with:
+          name: vehicle-image-tag
+          path: vehicle_image_tag.txt
+          if-no-files-found: error
+
+      - name: Send Docker build failure notification
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: Vehicle Docker Build Failure 🐳
+          mention: channel
+          if_mention: always
+          job_name: build-vehicle-dev-image
+          channel: parklens-deployment-alerts
+          username: Parklense-CICD
+          text: |
+            ❌ *Vehicle Service Docker build failed for dev deployment* 🐳
+            *Commit:* `${{ github.event.inputs.commit_sha }}` 
+            *Message:* ${{ github.event.inputs.commit_message }}
+            Please fix the Docker build issues.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
   deploy-vehicle-dev:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
+    needs: [build-vehicle-dev-image]
     environment: 
-      name: development
+      name: dev
       url: https://vehicle.parklensedev.com
     
     steps:
-      - name: Display Deployment Information
-        run: |
-          echo "Vehicle Image: ${{ github.event.inputs.image }}"
-          echo "SHA: ${{ github.event.inputs.sha }}"
-          echo "Commit Message: ${{ github.event.inputs.commit_message }}"
-
       - name: Checkout deployment repository
         uses: actions/checkout@v4
         with:
+          repository: 'Greatify/Parklense-service-Deployment'
+          ref: 'main'
           token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
-      - name: Set environment variables
-        run: |
-          echo "VEHICLE_IMAGE=${{ github.event.inputs.image }}" >> $GITHUB_ENV
-          echo "COMMIT_SHA=${{ github.event.inputs.sha }}" >> $GITHUB_ENV
-          echo "COMMIT_MESSAGE=${{ github.event.inputs.commit_message }}" >> $GITHUB_ENV
-          echo "DEPLOY_ACTOR=${{ github.actor }}" >> $GITHUB_ENV
+      - name: Download image tag files
+        uses: actions/download-artifact@v4
+        with:
+          name: vehicle-image-tag
+          path: .
 
-      - name: Update vehicle service image tags
+      - name: Set image tags as environment variables
         run: |
-          # Update vehicle service image tags in overlay files
-          sed -i 's|image: .*|image: '"$VEHICLE_IMAGE"'|' k8s/backend/vehicle/overlays/dev/kustomization.yaml
+          echo "VEHICLE_IMAGE=$(cat vehicle_image_tag.txt)" >> $GITHUB_ENV
+
+      - name: Update deployment image tag in Kustomization
+        run: |
+          # Update image tags in the dev overlay kustomization file
+          sed -i 's|image: "[^"]*"|image: "'"$VEHICLE_IMAGE"'"|g' k8s/backend/vehicle/overlays/dev/kustomization.yaml
+          sed -i 's|kubernetes.io/change-cause:.*|kubernetes.io/change-cause: Updated to "'"$VEHICLE_IMAGE"'"|g' k8s/backend/vehicle/overlays/dev/kustomization.yaml
 
       - name: Commit and push changes
         run: |
           git config --local user.email "deployment@parklense.com"
           git config --local user.name "Parklense Vehicle Deployment Bot"
+          git add k8s/backend/vehicle/overlays/dev/kustomization.yaml
           
-          if git diff --quiet; then
-            echo "No changes to commit"
+          # Check if there are any changes to commit
+          if git diff --cached --quiet; then
+            echo "No changes to commit, skipping commit and push"
           else
-            git add k8s/backend/vehicle/overlays/dev/
-            git commit -m "🚀 Vehicle Service Deploy to dev: ${{ env.COMMIT_MESSAGE }} (SHA: ${{ env.COMMIT_SHA }})"
+            echo "Changes detected, committing and pushing"
+            git commit -m "🚀 Update Vehicle Service image tags for dev deployment - ${{ github.event.inputs.commit_message }}"
             git push origin main
           fi
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials for deployment
         uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -66,10 +201,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Update Kubernetes configuration
-        run: |
-          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
-      - name: Deploy vehicle service to development environment
+      - name: Deploy to development environment
         run: |
           kubectl apply -k k8s/backend/vehicle/overlays/dev
 
@@ -91,11 +225,20 @@ jobs:
         if: success()
         uses: 8398a7/action-slack@v3
         with:
-          status: success
+          status: ${{ job.status }}
+          author_name: Vehicle Service Deployment Success
+          mention: channel
+          if_mention: success
+          job_name: deploy-vehicle-dev
           channel: parklens-deployment-alerts
+          username: Parklense-CICD
           text: |
-            :rocket: *Vehicle Service - Dev Deployed Successfully*
-            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
+            :rocket: *Vehicle Service deployment to dev environment succeeded*
+            
+            *Commit:* `${{ github.event.inputs.commit_sha }}` 
+            *Message:* ${{ github.event.inputs.commit_message }}
+            
+            Your changes have been deployed successfully to Development.
             *URL:* https://vehicle.parklensedev.com
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -104,11 +247,19 @@ jobs:
         if: failure()
         uses: 8398a7/action-slack@v3
         with:
-          status: failure
+          status: ${{ job.status }}
+          author_name: Vehicle Service Deployment Failure ❌
+          mention: channel
+          if_mention: failure
+          job_name: deploy-vehicle-dev
           channel: parklens-deployment-alerts
+          username: Parklense-CICD
           text: |
-            :x: *Vehicle Service - Dev Deployment Failed*
-            *By:* ${{ env.DEPLOY_ACTOR }} | *SHA:* ${{ env.COMMIT_SHA }}
-            Check logs for details.
+            ❌ *Vehicle Service Dev Deployment Failed*
+            
+            *Commit:* `${{ github.event.inputs.commit_sha }}` 
+            *Message:* ${{ github.event.inputs.commit_message }}
+            
+            Please check the logs and fix the issues immediately.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 
