@@ -119,8 +119,10 @@ jobs:
             ENV_FILE=.env
             BUILDKIT_INLINE_CACHE=1
           cache-from: |
+            type=gha
             type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklens-frontend:cache
           cache-to: |
+            type=gha,mode=max
             type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklens-frontend:cache,mode=max
           no-cache: false
           pull: true
