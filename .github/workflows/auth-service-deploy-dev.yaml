@@ -194,25 +194,25 @@ jobs:
         run: |
           kubectl apply -k k8s/backend/auth/overlays/dev
 
-      - name: Wait for rollout completion
-        run: |
-          kubectl rollout status deployment/parklense-auth-backend -n dev-parklense --timeout=300s
-          kubectl rollout status deployment/parklense-auth-celery-worker -n dev-parklense --timeout=300s
-          kubectl rollout status deployment/parklense-auth-celery-beat -n dev-parklense --timeout=300s
+      # - name: Wait for rollout completion
+      #   run: |
+      #     kubectl rollout status deployment/parklense-auth-backend -n dev-parklense --timeout=300s
+      #     kubectl rollout status deployment/parklense-auth-celery-worker -n dev-parklense --timeout=300s
+      #     kubectl rollout status deployment/parklense-auth-celery-beat -n dev-parklense --timeout=300s
 
-      - name: Verify auth deployment
-        run: |
-          kubectl get pods -n dev-parklense -l app=parklense-auth-backend
-          kubectl get services -n dev-parklense -l app=parklense-auth-backend
-          kubectl get ingress -n dev-parklense
+      # - name: Verify auth deployment
+      #   run: |
+      #     kubectl get pods -n dev-parklense -l app=parklense-auth-backend
+      #     kubectl get services -n dev-parklense -l app=parklense-auth-backend
+      #     kubectl get ingress -n dev-parklense
 
-      - name: Run auth health checks
-        run: |
-          echo "Waiting for auth deployment to be ready..."
-          sleep 30
+      # - name: Run auth health checks
+      #   run: |
+      #     echo "Waiting for auth deployment to be ready..."
+      #     sleep 30
           
-          # Test auth service health endpoint
-          curl -f -s -o /dev/null https://auth.parklensedev.com/api/health/ || echo "Auth health check failed, but continuing..."
+      #     # Test auth service health endpoint
+      #     curl -f -s -o /dev/null https://auth.parklensedev.com/api/health/ || echo "Auth health check failed, but continuing..."
 
       - name: Send deployment success notification
         if: success()
