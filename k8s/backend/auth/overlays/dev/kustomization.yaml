@@ -27,12 +27,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-old-CI-build-and-deploy-work-f841df9df5629889e58e710ef32af8826dab0df6"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-code-complexity-check-from-C-5f3b47d358700c39e48c9cca22301a8879d1693f"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-old-CI-build-and-deploy-work-f841df9df5629889e58e710ef32af8826dab0df6
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-code-complexity-check-from-C-5f3b47d358700c39e48c9cca22301a8879d1693f
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
@@ -59,12 +59,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-old-CI-build-and-deploy-work-f841df9df5629889e58e710ef32af8826dab0df6"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-code-complexity-check-from-C-5f3b47d358700c39e48c9cca22301a8879d1693f"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-old-CI-build-and-deploy-work-f841df9df5629889e58e710ef32af8826dab0df6
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-code-complexity-check-from-C-5f3b47d358700c39e48c9cca22301a8879d1693f
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
@@ -100,12 +100,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-old-CI-build-and-deploy-work-f841df9df5629889e58e710ef32af8826dab0df6"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-code-complexity-check-from-C-5f3b47d358700c39e48c9cca22301a8879d1693f"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-old-CI-build-and-deploy-work-f841df9df5629889e58e710ef32af8826dab0df6
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Remove-code-complexity-check-from-C-5f3b47d358700c39e48c9cca22301a8879d1693f
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
