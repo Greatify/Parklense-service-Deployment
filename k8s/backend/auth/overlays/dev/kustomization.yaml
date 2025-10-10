@@ -27,12 +27,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Add-Pylint-configuration-for-Django-8a177dc58ae904dbdbe4ce507e9b854e4eb20219"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Enhance-CICD-pipeline-with-comprehe-eda30ad7fb7ffaef2b546b7c47daa12537d8e85a"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Add-Pylint-configuration-for-Django-8a177dc58ae904dbdbe4ce507e9b854e4eb20219
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Enhance-CICD-pipeline-with-comprehe-eda30ad7fb7ffaef2b546b7c47daa12537d8e85a
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
@@ -59,12 +59,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Add-Pylint-configuration-for-Django-8a177dc58ae904dbdbe4ce507e9b854e4eb20219"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Enhance-CICD-pipeline-with-comprehe-eda30ad7fb7ffaef2b546b7c47daa12537d8e85a"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Add-Pylint-configuration-for-Django-8a177dc58ae904dbdbe4ce507e9b854e4eb20219
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Enhance-CICD-pipeline-with-comprehe-eda30ad7fb7ffaef2b546b7c47daa12537d8e85a
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
@@ -100,12 +100,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Add-Pylint-configuration-for-Django-8a177dc58ae904dbdbe4ce507e9b854e4eb20219"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Enhance-CICD-pipeline-with-comprehe-eda30ad7fb7ffaef2b546b7c47daa12537d8e85a"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Add-Pylint-configuration-for-Django-8a177dc58ae904dbdbe4ce507e9b854e4eb20219
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Enhance-CICD-pipeline-with-comprehe-eda30ad7fb7ffaef2b546b7c47daa12537d8e85a
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
