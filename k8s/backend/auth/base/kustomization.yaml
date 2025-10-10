@@ -18,7 +18,7 @@ resources:
   
   # Auth Service - Configurations
   - configmap/nginx-config.yaml
-  - configmap/auth-config.yaml
+  # - configmap/auth-config.yaml
   - secrets/parklense-auth-secrets.yaml
   
   # Auth Service - Storage

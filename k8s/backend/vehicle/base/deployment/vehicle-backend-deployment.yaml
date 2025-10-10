@@ -47,33 +47,10 @@ spec:
             - containerPort: 80
               name: http
           env:
-            - name: DJANGO_SETTINGS_MODULE
-              value: "config.settings.production"
             - name: REDIS_URL
               value: "redis://redis-service:6379/0"
             - name: WORKERS
               value: "4"
-            - name: DJANGO_SECRET_KEY
-              value: "ocn+t!pvvi&tf3_s&_biac0q7+nmo=j^$7e2%xhto2_y10)g$p"
-            - name: PORT
-              value: "8000"
-            - name: WITH_NGINX
-              value: "true"
-            - name: DJANGO_REDIS_PARSER_CLASS
-              value: "redis.connection.DefaultParser"
-            - name: LOG_LEVEL
-              value: "DEBUG"
-            - name: DJANGO_LOG_LEVEL
-              value: "DEBUG"
-            - name: UVICORN_LOG_LEVEL
-              value: "debug"
-            - name: ALLOWED_HOSTS
-              value: "*"
-            - name: CORS_ALLOWED_ORIGINS
-              value: "https://vehicle.parklensedev.com"
-          envFrom:
-            - configMapRef:
-                name: vehicle-config
           volumeMounts:
             - name: parklense-vehicle-secrets-volume
               mountPath: /mnt/secret-store
