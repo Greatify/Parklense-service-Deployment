@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parklense-vehicle-admin-backend
+  labels:
+    app: parklense-vehicle-admin-backend
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parklense-vehicle-admin-backend
+  template:
+    metadata:
+      labels:
+        app: parklense-vehicle-admin-backend
+        version: v1
+    spec:
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: parklense-vehicle-admin-secrets-volume
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: parklense-vehicle-admin-backend-secrets
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: nginx-cache
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: nginx-config
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+        - name: parklense-vehicle-admin-storage
+          emptyDir: {}
+        - name: logs-volume
+          emptyDir: {}
+      containers:
+        - name: vehicle-admin-backend
+          image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-initial-setup
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: REDIS_URL
+              value: "redis://redis-service:6379/0"
+            - name: WORKERS
+              value: "4"
+          volumeMounts:
+            - name: parklense-vehicle-admin-secrets-volume
+              mountPath: /mnt/secret-store
+              readOnly: true
+            - name: config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: parklense-vehicle-admin-storage
+              mountPath: /app/media
+            - name: logs-volume
+              mountPath: /app/logs
+          lifecycle:
+            postStart:
+              exec:
+                command: ['sh', '-c', 'cp -R /mnt/secret-store/.env /app/.env']
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

@@ -1,0 +1,129 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dev-parklense
+
+resources:
+  - ../../base
+  # - storage/pv.yaml
+  # - storage/pvc.yaml
+
+# Environment-specific labels
+labels:
+  - pairs:
+      environment: development
+      tier: dev
+    includeSelectors: false
+
+# Patches for dev environment
+patches:
+  # Vehicle Admin Backend Deployment patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: parklense-vehicle-admin-backend
+      spec:
+        replicas: 1
+        template:
+          metadata:
+            annotations:
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-initial-setup"
+          spec:
+            serviceAccountName: parklense-vehicle-admin-secret-sa
+            containers:
+            - name: vehicle-admin-backend
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-initial-setup
+              resources: null  # Commented out for dev environment
+              # resources:
+              #   requests:
+              #     cpu: "0.25"
+              #     memory: "512Mi"
+              #   limits:
+              #     cpu: "0.5"
+              #     memory: "1Gi"
+              env:
+              - name: WORKERS
+                value: "2"
+    target:
+      kind: Deployment
+      name: parklense-vehicle-admin-backend
+
+  # Vehicle Admin Ingress patches
+  - patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: parklense-vehicle-admin-ingress
+        annotations:
+          alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
+          alb.ingress.kubernetes.io/cors-allow-origin: >-
+            https://parklensedev.com,https://*.parklensedev.com
+          alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-admin-dev-alb
+          alb.ingress.kubernetes.io/load-balancer-attributes: >-
+            idle_timeout.timeout_seconds=60,deletion_protection.enabled=false
+          alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}, {"HTTP": 80}]'
+      spec:
+        rules:
+        - host: admin.parklensedev.com
+          http:
+            paths:
+            # Health check endpoint
+            - path: /health
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-admin-backend-service
+                  port:
+                    number: 80
+            # Admin-specific API
+            - path: /api/admin
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-admin-backend-service
+                  port:
+                    number: 80
+            # Django Admin interface
+            - path: /admin
+              pathType: Prefix
+              backend:
+                service:
+                  name: parklense-vehicle-admin-backend-service
+                  port:
+                    number: 80
+        tls:
+          - hosts:
+              - api.parklensedev.com
+            secretName: parklense-vehicle-admin-tls
+    target:
+      kind: Ingress
+      name: parklense-vehicle-admin-ingress
+
+  # Vehicle Admin Secrets patches
+  - patch: |-
+      apiVersion: secrets-store.csi.x-k8s.io/v1
+      kind: SecretProviderClass
+      metadata:
+        name: parklense-vehicle-admin-backend-secrets
+      spec:
+        parameters:
+          objects: |
+            - objectName: arn:aws:secretsmanager:ap-south-1:399600302704:secret:parklense-vehicle-admin-service-dev-MicUuM
+              objectAlias: ".env"
+              objectType: "secretsmanager"
+    target:
+      kind: SecretProviderClass
+      name: parklense-vehicle-admin-backend-secrets
+
+  # Vehicle Admin HPA patches - reduce scaling for dev
+  - patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: parklense-vehicle-admin-backend-autoscaler
+      spec:
+        minReplicas: 1
+        maxReplicas: 3
+    target:
+      kind: HorizontalPodAutoscaler
+      name: parklense-vehicle-admin-backend-autoscaler

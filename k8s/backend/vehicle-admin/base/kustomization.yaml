@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Vehicle Admin Service resources only
+resources:
+  # Vehicle Admin Service - Core deployments
+  - deployment/vehicle-admin-backend-deployment.yaml
+  
+  # Vehicle Admin Service - Services
+  - services/vehicle-admin-backend-service.yaml
+  
+  # Vehicle Admin Service - Network
+  - ingress/vehicle-admin-ingress.yaml
+  
+  # Vehicle Admin Service - Configurations
+  # - configmap/vehicle-admin-config.yaml
+  - configmap/nginx-config.yaml
+  - secrets/parklense-vehicle-admin-secrets.yaml
+  # - secrets/parklense-vehicle-admin-sa.yaml
+  
+  # Vehicle Admin Service - Autoscaling
+  - autoscaling/vehicle-admin-backend-autoscaler.yaml
+
+# Common labels for vehicle admin service
+labels:
+  - pairs:
+      app.kubernetes.io/name: parklense-vehicle-admin
+      app.kubernetes.io/part-of: parklense-platform
+    includeSelectors: true
