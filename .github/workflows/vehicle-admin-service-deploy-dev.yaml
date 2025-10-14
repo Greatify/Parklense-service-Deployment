@@ -87,20 +87,32 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
+          # tags: |
+          #   ${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-admin:${{ steps.generate-tag.outputs.IMAGE_TAG }}
           tags: |
+            ${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-admin:latest
             ${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-admin:${{ steps.generate-tag.outputs.IMAGE_TAG }}
           platforms: linux/arm64
-          build-args: |
-            ENVIRONMENT=dev
-            BUILDKIT_INLINE_CACHE=1
+          # build-args: |
+          #   ENVIRONMENT=dev
+          #   BUILDKIT_INLINE_CACHE=1
+          # cache-from: |
+          #   type=gha
+          #   type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-admin:cache
+          # cache-to: |
+          #   type=gha,mode=max
+          #   type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-admin:cache,mode=max
+          # no-cache: false
+          # pull: true
           cache-from: |
             type=gha
             type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-admin:cache
           cache-to: |
             type=gha,mode=max
             type=registry,ref=${{ steps.login-ecr.outputs.registry }}/parklense-vehicle-admin:cache,mode=max
-          no-cache: false
-          pull: true
+          build-args: |
+            ENVIRONMENT=dev
+            BUILDKIT_INLINE_CACHE=1
 
       - name: Save image tag to file
         run: |
