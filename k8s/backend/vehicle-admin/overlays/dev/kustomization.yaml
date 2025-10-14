@@ -27,12 +27,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-Merge-pull-request-4-from-Greatifyb-138841d19f3afa24d4ee91f3f1a0491d950fd661"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-Merge-pull-request-5-from-Greatifyb-fd95c5ac324f5cb51fc41aeb7ecb517a9cb26d1f"
           spec:
             serviceAccountName: parklense-vehicle-admin-secret-sa
             containers:
             - name: vehicle-admin-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-Merge-pull-request-4-from-Greatifyb-138841d19f3afa24d4ee91f3f1a0491d950fd661
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-Merge-pull-request-5-from-Greatifyb-fd95c5ac324f5cb51fc41aeb7ecb517a9cb26d1f
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
