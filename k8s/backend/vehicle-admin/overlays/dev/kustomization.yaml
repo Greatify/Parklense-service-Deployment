@@ -27,12 +27,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-chore-Add-psutil-dependency-to-requ-04f4af4e1ebbdb6233401625ddddbcb257cb1a19"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-Merge-pull-request-4-from-Greatifyb-138841d19f3afa24d4ee91f3f1a0491d950fd661"
           spec:
             serviceAccountName: parklense-vehicle-admin-secret-sa
             containers:
             - name: vehicle-admin-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-chore-Add-psutil-dependency-to-requ-04f4af4e1ebbdb6233401625ddddbcb257cb1a19
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-admin:dev-Merge-pull-request-4-from-Greatifyb-138841d19f3afa24d4ee91f3f1a0491d950fd661
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
