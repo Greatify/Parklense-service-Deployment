@@ -28,7 +28,7 @@ metadata:
 
 spec:
   rules:
-    - host: admin.parklensedev.com
+    - host: api.parklensedev.com
       http:
         paths:
           # Health check endpoint
@@ -40,15 +40,16 @@ spec:
                 port:
                   number: 80
           # Admin-specific API
-          - path: /api/admin
+          - path: /api/v1/admin
             pathType: Prefix
             backend:
               service:
                 name: parklense-vehicle-admin-backend-service
                 port:
                   number: 80
-          # Admin interface
-          - path: /admin
+
+          # Django Admin documentation
+          - path: /api/v1/admin/docs
             pathType: Prefix
             backend:
               service:
