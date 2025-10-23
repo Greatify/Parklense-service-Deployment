@@ -39,7 +39,16 @@ spec:
                 name: parklense-vehicle-admin-backend-service
                 port:
                   number: 80
-          # Admin-specific API
+          # FAQ API endpoints
+          - path: /api/v1/faq
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-admin-backend-service
+                port:
+                  number: 80
+
+          # Admin authentication API
           - path: /api/v1/admin
             pathType: Prefix
             backend:
@@ -48,8 +57,31 @@ spec:
                 port:
                   number: 80
 
-          # Django Admin documentation
-          - path: /api/v1/admin/docs
+          # API Documentation endpoints
+          - path: /api/schema
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-admin-backend-service
+                port:
+                  number: 80
+          - path: /api/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-admin-backend-service
+                port:
+                  number: 80
+          - path: /api/redoc
+            pathType: Prefix
+            backend:
+              service:
+                name: parklense-vehicle-admin-backend-service
+                port:
+                  number: 80
+
+          # Django Admin interface
+          - path: /admin
             pathType: Prefix
             backend:
               service:

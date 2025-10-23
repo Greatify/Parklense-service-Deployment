@@ -7,41 +7,6 @@ servers:
 - url: "https://api.parklensedev.com"
 paths:
   # Auth Service Routes
-  /admin:
-    x-amazon-apigateway-any-method:
-      responses:
-        default:
-          description: "Admin interface"
-      x-amazon-apigateway-integration:
-        requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-        payloadFormatVersion: "1.0"
-        type: "http_proxy"
-        httpMethod: "ANY"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/admin"
-        connectionType: "INTERNET"
-        timeoutInMillis: 30000
-
-  /admin/{proxy+}:
-    parameters:
-    - name: "proxy+"
-      in: "path"
-      required: true
-      schema:
-        type: "string"
-    x-amazon-apigateway-any-method:
-      responses:
-        default:
-          description: "Admin proxy"
-      x-amazon-apigateway-integration:
-        requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-        payloadFormatVersion: "1.0"
-        type: "http_proxy"
-        httpMethod: "ANY"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/admin/{proxy}"
-        connectionType: "INTERNET"
-        timeoutInMillis: 30000
 
   /api/v1/auth:
     x-amazon-apigateway-any-method:
@@ -54,8 +19,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/auth/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /api/v1/auth/{proxy+}:
@@ -75,8 +41,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/auth/{proxy}"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /api/v1/profile:
@@ -90,8 +57,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/profile/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /api/v1/profile/{proxy+}:
@@ -111,8 +79,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/profile/{proxy}"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   # Vehicle Service Routes
@@ -127,8 +96,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicles/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /api/v1/vehicles/{proxy+}:
@@ -148,8 +118,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicles/{proxy}"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /api/v1/vehicle-types/{proxy+}:
@@ -169,8 +140,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/vehicle-types/{proxy}"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /api/v1/users/initialize:
@@ -184,8 +156,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "ANY"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/v1/users/initialize/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   # Health Check Routes (Service-Specific)
@@ -200,8 +173,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/health/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /health/vehicles:
@@ -215,8 +189,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/health/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /health:
@@ -230,8 +205,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/health/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   # Documentation Routes (Service-Specific)
@@ -246,8 +222,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/schema/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /docs/vehicles/schema:
@@ -261,8 +238,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/schema/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /docs/auth:
@@ -276,8 +254,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/swagger/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /docs/vehicles:
@@ -291,8 +270,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/docs/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /docs/auth/redoc:
@@ -306,8 +286,9 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/v1/redoc/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-auth-internal-alb/7e8e589806dc02de/5badea5f98892f1c"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
   /docs/vehicles/redoc:
@@ -321,47 +302,11 @@ paths:
         payloadFormatVersion: "1.0"
         type: "http_proxy"
         httpMethod: "GET"
-        uri: "http://parklense-vehicle-dev-alb-1618789014.ap-south-1.elb.amazonaws.com/api/redoc/"
-        connectionType: "INTERNET"
+        uri: "arn:aws:elasticloadbalancing:ap-south-1:399600302704:listener/app/parklense-vehicle-internal-alb/5b8f7853daebf0db/5378440b48953563"
+        connectionType: "VPC_LINK"
+        connectionId: "fvhrmx"
         timeoutInMillis: 30000
 
-  # Static Files Routes
-  /static/{proxy+}:
-    parameters:
-    - name: "proxy+"
-      in: "path"
-      required: true
-      schema:
-        type: "string"
-    x-amazon-apigateway-any-method:
-      responses:
-        default:
-          description: "Static files proxy (auth service)"
-      x-amazon-apigateway-integration:
-        requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-        payloadFormatVersion: "1.0"
-        type: "http_proxy"
-        httpMethod: "ANY"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/static/{proxy}"
-        connectionType: "INTERNET"
-        timeoutInMillis: 30000
-
-  # Legacy/Compatibility Routes (Optional - for backward compatibility)
-  /api/schema:
-    get:
-      responses:
-        default:
-          description: "Auth service schema (legacy route)"
-      x-amazon-apigateway-integration:
-        requestParameters:
-          overwrite:header.Host: "api.parklensedev.com"
-        payloadFormatVersion: "1.0"
-        type: "http_proxy"
-        httpMethod: "GET"
-        uri: "http://parklense-auth-dev-alb-2046375436.ap-south-1.elb.amazonaws.com/api/schema/"
-        connectionType: "INTERNET"
-        timeoutInMillis: 30000
 
 x-amazon-apigateway-cors:
   allowMethods:
