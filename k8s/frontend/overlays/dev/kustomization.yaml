@@ -30,11 +30,11 @@ patches:
             labels:
               app: parklens-frontend
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:dev-Merge-pull-request-2-from-Greatify1-cce985097e829252b3c21fef6b7feb72f92cc829"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:dev-Merge-pull-request-3-from-Greatify1-a20f8ddaa7be807ad9697419d3f805af04e79b46"
           spec:
             containers:
             - name: parklens-frontend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:dev-Merge-pull-request-2-from-Greatify1-cce985097e829252b3c21fef6b7feb72f92cc829
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklens-frontend:dev-Merge-pull-request-3-from-Greatify1-a20f8ddaa7be807ad9697419d3f805af04e79b46
               
               imagePullPolicy: Always
               ports:
