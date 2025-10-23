@@ -48,7 +48,7 @@ patches:
       kind: Deployment
       name: parklense-vehicle-admin-backend
 
-  # Vehicle Admin Ingress patches
+  # Vehicle Admin Ingress patches - using base configuration with additional annotations
   - patch: |-
       apiVersion: networking.k8s.io/v1
       kind: Ingress
@@ -58,40 +58,10 @@ patches:
           alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
           alb.ingress.kubernetes.io/cors-allow-origin: >-
             https://parklensedev.com,https://*.parklensedev.com
-          alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-admin-dev-alb
+          alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-admin-internal-alb
           alb.ingress.kubernetes.io/load-balancer-attributes: >-
             idle_timeout.timeout_seconds=60,deletion_protection.enabled=false
-          alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}, {"HTTP": 80}]'
       spec:
-        rules:
-        - host: api.parklensedev.com
-          http:
-            paths:
-            # Health check endpoint
-            - path: /health
-              pathType: Prefix
-              backend:
-                service:
-                  name: parklense-vehicle-admin-backend-service
-                  port:
-                    number: 80
-            # Admin-specific API
-            - path: /api/v1/admin
-              pathType: Prefix
-              backend:
-                service:
-                  name: parklense-vehicle-admin-backend-service
-                  port:
-                    number: 80
-
-            # Django Admin documentation
-            - path: /api/v1/admin/docs
-              pathType: Prefix
-              backend:
-                service:
-                  name: parklense-vehicle-admin-backend-service
-                  port:
-                    number: 80
         tls:
           - hosts:
               - api.parklensedev.com

@@ -7,8 +7,9 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internal
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-admin-internal-alb
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
     alb.ingress.kubernetes.io/cors-allow-origin: "*"
     alb.ingress.kubernetes.io/cors-allow-methods: "GET,POST,PUT,DELETE,OPTIONS"
     alb.ingress.kubernetes.io/cors-allow-headers: "*"
@@ -27,6 +28,10 @@ metadata:
 
 spec:
   ingressClassName: internal-alb
+  tls:
+    - hosts:
+        - api.parklensedev.com
+      secretName: parklense-vehicle-admin-tls
   rules:
     - host: api.parklensedev.com
       http:
