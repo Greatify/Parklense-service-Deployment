@@ -58,7 +58,7 @@ patches:
           alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399600302704:certificate/6eb37406-7e5c-4612-9761-e49fcb1d3bf3
           alb.ingress.kubernetes.io/cors-allow-origin: >-
             https://parklensedev.com,https://*.parklensedev.com
-          alb.ingress.kubernetes.io/load-balancer-name: parklense-vehicle-admin-internal-alb
+          alb.ingress.kubernetes.io/load-balancer-name: parklense-vadmin-internal-alb
           alb.ingress.kubernetes.io/load-balancer-attributes: >-
             idle_timeout.timeout_seconds=60,deletion_protection.enabled=false
       spec:
