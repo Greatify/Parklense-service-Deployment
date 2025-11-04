@@ -27,12 +27,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-fix-remove-system-dependencies-inst-1cb12f1c498922da13228edb09fa6765cc0fc955"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Workflow-access-from-service-to-ser-8c4600f7f92ac0f42a4870f8793b358798534a13"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-fix-remove-system-dependencies-inst-1cb12f1c498922da13228edb09fa6765cc0fc955
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Workflow-access-from-service-to-ser-8c4600f7f92ac0f42a4870f8793b358798534a13
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
@@ -59,12 +59,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-fix-remove-system-dependencies-inst-1cb12f1c498922da13228edb09fa6765cc0fc955"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Workflow-access-from-service-to-ser-8c4600f7f92ac0f42a4870f8793b358798534a13"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-worker
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-fix-remove-system-dependencies-inst-1cb12f1c498922da13228edb09fa6765cc0fc955
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Workflow-access-from-service-to-ser-8c4600f7f92ac0f42a4870f8793b358798534a13
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
@@ -100,12 +100,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-fix-remove-system-dependencies-inst-1cb12f1c498922da13228edb09fa6765cc0fc955"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Workflow-access-from-service-to-ser-8c4600f7f92ac0f42a4870f8793b358798534a13"
           spec:
             serviceAccountName: parklense-auth-secret-sa
             containers:
             - name: parklense-auth-celery-beat
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-fix-remove-system-dependencies-inst-1cb12f1c498922da13228edb09fa6765cc0fc955
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-auth-service:dev-Workflow-access-from-service-to-ser-8c4600f7f92ac0f42a4870f8793b358798534a13
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
