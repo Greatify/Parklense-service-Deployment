@@ -27,12 +27,12 @@ patches:
         template:
           metadata:
             annotations:
-              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:dev-feat-add-VehicleTicketDetailsView-f-d2662845ae2f353b8536d991b862edc5827bf5c7"
+              kubernetes.io/change-cause: "Updated to 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:dev-Current-tickets-api-call-for-Parkle-f9e3b3509edb2925fca1d3886421ecd42df6e712"
           spec:
             serviceAccountName: parklense-vehicle-secret-sa
             containers:
             - name: vehicle-backend
-              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:dev-feat-add-VehicleTicketDetailsView-f-d2662845ae2f353b8536d991b862edc5827bf5c7
+              image: 399600302704.dkr.ecr.ap-south-1.amazonaws.com/parklense-vehicle-managment-service:dev-Current-tickets-api-call-for-Parkle-f9e3b3509edb2925fca1d3886421ecd42df6e712
               resources: null  # Commented out for dev environment
               # resources:
               #   requests:
